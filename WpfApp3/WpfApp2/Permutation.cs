@@ -8,9 +8,9 @@ namespace WpfApp2
 {
     public static class Permutation
     {
-        public static int[,] matrix_permutation;
+        public static List<List<int>> permutations = new List<List<int>>();
 
-        public static void CalculatePermutationMatrix(int obj_num)
+        public static void CalculatePermutations(int obj_num)
         {
             int[] obj = new int[obj_num];
             for (int i = 0; i < obj_num; i++)
@@ -18,28 +18,11 @@ namespace WpfApp2
                 obj[i] = i + 1;
             }
 
-            long n = Fact(obj_num);
-            matrix_permutation = new int[obj_num, n];
-
-            List<int[]> temp = new List<int[]>();
             foreach (var permutation in obj.GetPermutations())
             {
-                temp.Add(permutation.ToArray<int>());
-            }
-            int[][] matrix_for_convert = temp.ToArray();
-
-
-            for (int i = 0; i < obj_num; i++)
-            {
-                for (long j = 0; j < n; j++)
-                {
-                    matrix_permutation[i, j] = matrix_for_convert[j][i];
-                    Console.Write(matrix_permutation[i, j] + " ");
-                }
-                Console.WriteLine();
+                permutations.Add(permutation.ToList());
             }
         }
-
 
         public static IEnumerable<IEnumerable<T>> GetPermutations<T>(this IEnumerable<T> enumerable)
         {
@@ -102,18 +85,5 @@ namespace WpfApp2
 
             return result;
         }
-
-        public static long Fact(int n)
-        {
-            long result = n;
-
-            for (int i = 1; i < n; i++)
-            {
-                result = result * i;
-            }
-
-            return result;
-        }
-
     }
 }

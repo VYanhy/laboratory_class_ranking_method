@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Aspose.Cells;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,6 +13,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.IO;
 
 namespace WpfApp2
 {
@@ -48,24 +50,14 @@ namespace WpfApp2
 
             InitializeComponent();
 
-            Cook cook = new Cook();
-            cook.ranking = ranking;
+            Cook cook = new Cook(ranking);
+            cook.MinMax();
 
-            string str_cook_comp = "";
-            cook.CooksDistance(Ranking.m, ranking.n, ranking.matrix);
-            Dictionary<int, List<int>> cook_comp = cook.FindCompromiseRanking();
-            foreach(KeyValuePair<int, List<int>> i in cook_comp)
-            {
-                str_cook_comp += i.Key + ": ";
+            var app = new Microsoft.Office.Interop.Excel.Application();
+            var workbook = app.Workbooks.Open(Directory.GetCurrentDirectory() + cook.WorkbookPath);
 
-                foreach (int j in i.Value)
-                {
-                    str_cook_comp += j + " ";
-                }
 
-                str_cook_comp += Environment.NewLine;
-            }
-            cook_comp_rank.Text = str_cook_comp;
+
 
             /*
             Hamming hamming = new Hamming();

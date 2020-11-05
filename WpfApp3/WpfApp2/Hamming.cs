@@ -8,6 +8,7 @@ namespace WpfApp2
 {
     class Hamming
     {
+        /*
         public Ranking ranking;
         Dictionary<int, List<int>> distance;
         Dictionary<int, int> distance_sum;
@@ -68,12 +69,12 @@ namespace WpfApp2
         {
             int obj_num = Ranking.m;
 
-            if (Permutation.matrix_permutation == null)
+            if (Permutation.permutations == null)
             {
-                Permutation.CalculatePermutationMatrix(obj_num);
+                Permutation.CalculatePermutations(obj_num);
             }
 
-            HammingDistance(obj_num, Permutation.matrix_permutation.Length, Permutation.matrix_permutation);
+            HammingDistance(obj_num, Permutation.permutations.Length, Permutation.permutations);
             Console.WriteLine(MinMax());
         }
 
@@ -93,7 +94,7 @@ namespace WpfApp2
                 Console.WriteLine();
             }
         }
-
+        */
 
     }
 }

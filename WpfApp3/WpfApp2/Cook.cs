@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Aspose.Cells;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,86 +9,153 @@ namespace WpfApp2
 {
     class Cook
     {
-        public Ranking ranking;
-        Dictionary<int, List<int>> distance;
-        Dictionary<int, int> distance_sum;
+        Ranking ranking;
+        Dictionary<int, CookDistanceRow> distances = new Dictionary<int, CookDistanceRow>();
+        List<CalculationCompromiseRow> all_distances = new List<CalculationCompromiseRow>();
+        List<CalculationCompromiseRow> compromise_distances = new List<CalculationCompromiseRow>();
         public int min;
+        public int max;
 
-        public void CooksDistance(int obj_num, long expert_num, int[,] matrix)
+        Workbook workbook;
+        string workbook_path = "";
+
+        public string WorkbookPath
         {
-            expert_num = 5;
-
-            distance = new Dictionary<int, List<int>>();
-            distance_sum = new Dictionary<int, int>();
-
-            for (int i = 0; i < obj_num; i++)
+            get
             {
-                for (int j = i + 1; j < obj_num; j++)
+                if (workbook_path == "")
+                {
+                    FillWorkbook();
+                }
+                return workbook_path;
+            }
+        }
+
+        public Cook()
+        {
+
+        }
+
+        public Cook(Ranking ranking)
+        {
+            this.ranking = ranking;
+        }
+
+        public void CooksDistance()
+        {
+            for (int i = 0; i < Ranking.m; i++)
+            {
+                for (int j = i + 1; j < Ranking.m; j++)
                 {
                     int key = Convert.ToInt32((i + 1).ToString() + (j + 1).ToString());
                     List<int> temp = new List<int>();
 
-                    for (int k = 0; k < expert_num; k++)
+                    for (int k = 0; k < ranking.n; k++)
                     {
-                        temp.Add(Math.Abs(matrix[i, k] - matrix[j, k]));
-//                        Console.WriteLine(matrix[i, k] + "-" + matrix[j, k]);
+                        temp.Add(Math.Abs(ranking.matrix[i, k] - ranking.matrix[j, k]));
+//                        Console.WriteLine(ranking.matrix[i, k] + "-" + ranking.matrix[j, k]);
                     }
 
-                    distance.Add(key, temp);
-                    distance_sum.Add(key, temp.Sum());
+                    distances.Add(key, new CookDistanceRow(temp));
                 }
             }
         }
 
-        public Dictionary<int, List<int>> MinMax()
+        public List<CalculationCompromiseRow> MinMax()
         {
-            min = distance_sum.Values.Min();
+            FindCompromiseRankings();
 
-            Dictionary<int, List<int>> num_list = new Dictionary<int, List<int>>();
-
-            foreach (KeyValuePair<int, int> i in distance_sum)
+            min = all_distances.Min(x => x.sum);
+            foreach (CalculationCompromiseRow c in all_distances)
             {
-                if (i.Value == min)
+                if (c.sum == min)
                 {
-                    num_list.Add(i.Key, distance[i.Key]);
+                    compromise_distances.Add(c);
                 }
             }
+            max = compromise_distances.Max(x => x.max);
 
-            return num_list;
+            return compromise_distances;
         }
 
-        public Dictionary<int, List<int>> FindCompromiseRanking()
+        private void FindCompromiseRankings()
         {
-            int obj_num = Ranking.m;
-
-            if (Permutation.matrix_permutation == null)
+            if (Permutation.permutations == null)
             {
-                Permutation.CalculatePermutationMatrix(5/*obj_num*/);
+                Permutation.CalculatePermutations(Ranking.m);
             }
 
-            CooksDistance(obj_num, Permutation.matrix_permutation.Length, Permutation.matrix_permutation);
-            
-            return MinMax();
+            CalculateAllDistances();
         }
 
-        public void WriteToConsole()
+        private List<CalculationCompromiseRow> CalculateAllDistances()
         {
-            foreach (KeyValuePair<int, List<int>> d in distance)
+            foreach (List<int> p in Permutation.permutations)
             {
-                Console.Write(d.Key + " ");
+                List<int> distance_sum = new List<int>();
 
-                foreach (int i in d.Value)
+                for (int i = 0, sum = 0; i < Ranking.m; i++, sum = 0)
                 {
-                    Console.Write(i + " ");
+                    for (int j = 0; j < ranking.n; j++)
+                    {
+                        sum += Math.Abs(ranking.matrix[i, j] - p.ElementAt(i));
+                    }
+
+                    distance_sum.Add(sum);
                 }
 
-                Console.Write(distance_sum[d.Key]);
-
-                Console.WriteLine();
+                all_distances.Add(new CalculationCompromiseRow(p, distance_sum));
             }
+
+            return all_distances;
+        }
+
+        private void FillWorkbook()
+        {
+            int num_worksheet = 0;
+            workbook = new Workbook();
+            Worksheet sheet1 = workbook.Worksheets[num_worksheet];
+            Worksheet sheet = sheet1;
+
+            for (int i = 0, j = 0, filling = 0; i < all_distances.Count; i++, j = 0, filling++)
+            {
+                if (filling == 1048575)
+                {
+                    filling = 0;
+                    num_worksheet++;
+                    sheet = workbook.Worksheets[num_worksheet];
+                }
+
+                for (; j < Ranking.m; j++)
+                {
+                    sheet.Cells[CellsHelper.CellIndexToName(i, j)].PutValue(all_distances.ElementAt(i).distance.ElementAt(j));
+                }
+
+                sheet.Cells[CellsHelper.CellIndexToName(i, j + 1)].PutValue(all_distances.ElementAt(i).sum);
+                sheet.Cells[CellsHelper.CellIndexToName(i, j + 2)].PutValue(all_distances.ElementAt(i).max);
+            }
+
+            workbook_path = "cook.xlsx";
+            workbook.Save(workbook_path, SaveFormat.Xlsx);
         }
 
 
+        class CookDistanceRow
+        {
+            public List<int> distance;
+            public int sum;
+
+            public CookDistanceRow()
+            {
+
+            }
+
+            public CookDistanceRow(List<int> distance)
+            {
+                this.distance = distance;
+                sum = distance.Sum();
+            }
+        }
     }
 
 }
