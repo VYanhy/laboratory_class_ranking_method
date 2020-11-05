@@ -1,0 +1,22 @@
+﻿<Window x:Class="WpfApp2.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp2"
+        mc:Ignorable="d"
+        Title="Вибір процедури" Height="190" Width="300">
+    <Grid>
+        <StackPanel Margin="10">
+            <TextBlock FontFamily="Times New Roman" FontSize="14" HorizontalAlignment="Center" Margin="10" Text="Оберіть варіант задання рангів:"/>
+            
+            <Button x:Name="button_rand" Height="30" Background="LightBlue" BorderBrush="White" 
+                    Content="Випадковим чином" Click="button_rand_Click"/>
+            <Button x:Name="button_file" Height="30" Background="WhiteSmoke" BorderBrush="White" 
+                    Content="З файлу" Click="button_file_Click"/>
+            <Button x:Name="button_manual" Height="30" Background="LightBlue" BorderBrush="White" 
+                    Content="Введеня вручну" Click="button_manual_Click"/>
+            
+        </StackPanel>
+    </Grid>
+</Window>
