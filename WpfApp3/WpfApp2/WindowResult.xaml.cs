@@ -173,8 +173,9 @@ namespace WpfApp2
                     InitializeHamming();
                 }
 
-
+                hamming.SaveDistancesToWorkbook(file_path);
             }
+            /*
             else
             if ((bool)hamming_all.IsChecked)
             {
@@ -183,6 +184,7 @@ namespace WpfApp2
                     InitializeHamming();
                 }
 
+                hamming.SaveAllDistancesToWorkbook(file_path);
             }
             else
             if ((bool)hamming_compromise_min_max.IsChecked)
@@ -192,7 +194,9 @@ namespace WpfApp2
                     InitializeHamming();
                 }
 
+                hamming.SaveCompromisesToWorkbook(file_path);
             }
+            */
         }
 
         private void InitializeCook()
@@ -204,7 +208,7 @@ namespace WpfApp2
         private void InitializeHamming()
         {
             hamming = new Hamming(ranking);
-            hamming.MinMax();
+            //hamming.MinMax();
         }
 
 

@@ -35,8 +35,10 @@
             <RadioButton GroupName="action" Name="cook_all" Content="Відстані Кука для всіх можливих комбінацій"/>
             <RadioButton GroupName="action" Name="cook_compromise_min_max" Content="Компромісне ранжування через метрику Кука (мінімаксний критерій)"/>
             <RadioButton GroupName="action" Name="hamming_distances" Content="Відстані Хемінга"/>
+            <!--
             <RadioButton GroupName="action" Name="hamming_all" Content="Відстані Хемінга для всіх можливих комбінацій"/>
             <RadioButton GroupName="action" Name="hamming_compromise_min_max" Content="Компромісне ранжування через метрику Хемінга (мінімаксний критерій)"/>
+            -->
 
             <Grid Margin="0,5,0,5">
                 <TextBlock FontFamily="Times New Roman" FontSize="14" Margin="5,2" Text="Шлях та назва файлу з результатами" Foreground="Gray" Name="hintOptionallyForActionPath" />

@@ -64,6 +64,7 @@ namespace WpfApp2
             Workbook workbook = new Workbook(workbook_path);
             Worksheet sheet1 = workbook.Worksheets[workbook.Worksheets.Add()];
 
+            /*
             Worksheet sheet = sheet1;
             for (int i = 0, j = 1; i < distances.Count; i++, j = 0)
             {
@@ -76,11 +77,27 @@ namespace WpfApp2
 
                 sheet.Cells[CellsHelper.CellIndexToName(i, j + 1)].PutValue(distances.ElementAt(i).Value.sum);
             }
+            */
+
+            Worksheet sheet = sheet1;
+
+            for (int i = 0, j = 0; i < distances.Count; i++, j = 0)
+            {
+                sheet.Cells[CellsHelper.CellIndexToName(i, 0)].PutValue(distances.ElementAt(i).Key);
+
+                for (; j < ranking.n; j++)
+                {
+                    sheet.Cells[CellsHelper.CellIndexToName(i, j + 1)].PutValue(distances.ElementAt(i).Value.distance.ElementAt(j));
+                }
+
+                sheet.Cells[CellsHelper.CellIndexToName(i, j + 1)].PutValue(distances.ElementAt(i).Value.sum);
+            }
 
             workbook.Save(workbook_path, SaveFormat.Xlsx);
             MessageBox.Show("Файл " + workbook_path + " був створений");
         }
 
+        /*
         public List<CalculationCompromiseRow> MinMax()
         {
             FindCompromiseRankings();
@@ -187,6 +204,7 @@ namespace WpfApp2
             workbook.Save(workbook_path, SaveFormat.Xlsx);
             MessageBox.Show("Файл " + workbook_path + " був створений");
         }
+        */
 
         class HammingDistanceRow
         {
