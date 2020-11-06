@@ -51,12 +51,6 @@ namespace WpfApp2
             this.ranking.GenMatrixView();
 
             InitializeComponent();
-
-            /*
-            Hamming hamming = new Hamming();
-            hamming.HammingDistance(Ranking.m, ranking.n, ranking.matrix_ranking);
-            hamming.FindCompromiseRanking();
-            */
         }
 
         private void output_file_path_GotFocus(object sender, RoutedEventArgs e)
@@ -174,16 +168,29 @@ namespace WpfApp2
             else
             if ((bool)hamming_distances.IsChecked)
             {
+                if (hamming == null)
+                {
+                    InitializeHamming();
+                }
+
 
             }
             else
             if ((bool)hamming_all.IsChecked)
             {
+                if (hamming == null)
+                {
+                    InitializeHamming();
+                }
 
             }
             else
             if ((bool)hamming_compromise_min_max.IsChecked)
             {
+                if (hamming == null)
+                {
+                    InitializeHamming();
+                }
 
             }
         }
@@ -196,7 +203,8 @@ namespace WpfApp2
 
         private void InitializeHamming()
         {
-
+            hamming = new Hamming(ranking);
+            hamming.MinMax();
         }
 
 

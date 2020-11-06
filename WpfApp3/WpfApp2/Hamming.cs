@@ -1,100 +1,209 @@
-﻿using System;
+﻿using Aspose.Cells;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace WpfApp2
 {
     class Hamming
     {
-        /*
         public Ranking ranking;
-        Dictionary<int, List<int>> distance;
-        Dictionary<int, int> distance_sum;
+        Dictionary<int, HammingDistanceRow> distances = new Dictionary<int, HammingDistanceRow>();
+        List<CalculationCompromiseRow> all_distances = new List<CalculationCompromiseRow>();
+        List<CalculationCompromiseRow> compromise_distances = new List<CalculationCompromiseRow>();
         public int min;
+        public int max;
 
-
-        public void HammingDistance(int obj_num, long expert_num, int[,] matrix)
+        public Hamming()
         {
-            distance = new Dictionary<int, List<int>>();
-            distance_sum = new Dictionary<int, int>();
 
-            for (int i = 0; i < obj_num; i++)
+        }
+
+        public Hamming(Ranking ranking)
+        {
+            this.ranking = ranking;
+        }
+
+        public void HammingDistance()
+        {
+            for (int i = 0; i < Ranking.m; i++)
             {
-                for (int j = i + 1; j < obj_num; j++)
+                for (int j = i + 1; j < Ranking.m; j++)
                 {
                     int key = Convert.ToInt32((i + 1).ToString() + (j + 1).ToString());
                     List<int> temp = new List<int>();
 
-                    for (int k = 0; k < expert_num; k++)
+                    for (int k = 0; k < ranking.n; k++)
                     {
                         int val;
 
-                        if (matrix[i, k] < matrix[j, k])
+                        if (ranking.matrix[i, k] < ranking.matrix[j, k])
                             val = 1;
                         else
                             val = -1;
 
                         temp.Add(val);
-                        //                        Console.WriteLine(matrix[i, k] + "?" + matrix[j, k] + " " + val);
                     }
 
-                    distance.Add(key, temp);
-                    distance_sum.Add(key, temp.Sum());
+                    distances.Add(key, new HammingDistanceRow(temp));
                 }
             }
-
-            //WriteToConsole();
         }
 
-        public Dictionary<int, List<int>> MinMax()
+        public void SaveDistancesToWorkbook(string workbook_path)
         {
-            min = distance_sum.Values.Min();
-
-            Dictionary<int, List<int>> num_list = new Dictionary<int, List<int>>();
-
-            foreach (KeyValuePair<int, int> i in distance_sum)
+            if (distances.Count == 0)
             {
-                if (i.Value == min)
-                {
-                    num_list.Add(i.Key, distance[i.Key]);
-                }
+                HammingDistance();
             }
 
-            return num_list;
+            ranking.WriteRatesMatrixToFile(workbook_path);
+            Workbook workbook = new Workbook(workbook_path);
+            Worksheet sheet1 = workbook.Worksheets[workbook.Worksheets.Add()];
+
+            Worksheet sheet = sheet1;
+            for (int i = 0, j = 1; i < distances.Count; i++, j = 0)
+            {
+                sheet.Cells[CellsHelper.CellIndexToName(i, 0)].PutValue(distances.ElementAt(i).Key);
+
+                for (; j < ranking.n; j++)
+                {
+                    sheet.Cells[CellsHelper.CellIndexToName(i, j)].PutValue(distances.ElementAt(i).Value.distance.ElementAt(j));
+                }
+
+                sheet.Cells[CellsHelper.CellIndexToName(i, j + 1)].PutValue(distances.ElementAt(i).Value.sum);
+            }
+
+            workbook.Save(workbook_path, SaveFormat.Xlsx);
+            MessageBox.Show("Файл " + workbook_path + " був створений");
         }
 
-        public void FindCompromiseRanking()
+        public List<CalculationCompromiseRow> MinMax()
         {
-            int obj_num = Ranking.m;
+            FindCompromiseRankings();
 
+            min = all_distances.Min(x => x.sum);
+            foreach (CalculationCompromiseRow c in all_distances)
+            {
+                if (c.sum == min)
+                {
+                    compromise_distances.Add(c);
+                }
+            }
+            max = compromise_distances.Max(x => x.max);
+
+            return compromise_distances;
+        }
+
+        private void FindCompromiseRankings()
+        {
             if (Permutation.permutations == null)
             {
-                Permutation.CalculatePermutations(obj_num);
+                Permutation.CalculatePermutations(Ranking.m);
             }
 
-            HammingDistance(obj_num, Permutation.permutations.Length, Permutation.permutations);
-            Console.WriteLine(MinMax());
+            CalculateAllDistances();
         }
 
-        public void WriteToConsole()
+        private List<CalculationCompromiseRow> CalculateAllDistances()
         {
-            foreach (KeyValuePair<int, List<int>> d in distance)
+            foreach (List<int> p in Permutation.permutations)
             {
-                Console.Write(d.Key + " ");
+                List<int> distance_sum = new List<int>();
 
-                foreach (int i in d.Value)
+                for (int i = 0, sum = 0; i < Ranking.m; i++, sum = 0)
                 {
-                    Console.Write(i + " ");
+                    for (int j = 0; j < ranking.n; j++)
+                    {
+                        sum += Math.Abs(ranking.matrix[i, j] - p.ElementAt(i));
+                    }
+
+                    distance_sum.Add(sum);
                 }
 
-                Console.Write(distance_sum[d.Key]);
+                all_distances.Add(new CalculationCompromiseRow(p, distance_sum));
+            }
 
-                Console.WriteLine();
+            return all_distances;
+        }
+
+        public void SaveAllDistancesToWorkbook(string workbook_path)
+        {
+            ranking.WriteRatesMatrixToFile(workbook_path);
+            Workbook workbook = new Workbook(workbook_path);
+            Worksheet sheet1 = workbook.Worksheets[workbook.Worksheets.Add()];
+
+            Worksheet sheet = sheet1;
+            for (int i = 0, j = 0, filling = 0; i < all_distances.Count; i++, j = 0, filling++)
+            {
+                if (filling == 1048575)
+                {
+                    filling = 0;
+                    var worksheet_num = workbook.Worksheets.Add();
+                    sheet = workbook.Worksheets[worksheet_num];
+                }
+
+                for (; j < Ranking.m; j++)
+                {
+                    sheet.Cells[CellsHelper.CellIndexToName(filling, j)].PutValue(all_distances.ElementAt(i).distance.ElementAt(j));
+                }
+
+                sheet.Cells[CellsHelper.CellIndexToName(filling, j + 1)].PutValue(all_distances.ElementAt(i).sum);
+                sheet.Cells[CellsHelper.CellIndexToName(filling, j + 2)].PutValue(all_distances.ElementAt(i).max);
+            }
+
+            workbook.Save(workbook_path, SaveFormat.Xlsx);
+            MessageBox.Show("Файл " + workbook_path + " був створений");
+        }
+
+        public void SaveCompromisesToWorkbook(string workbook_path)
+        {
+            ranking.WriteRatesMatrixToFile(workbook_path);
+            Workbook workbook = new Workbook(workbook_path);
+            Worksheet sheet1 = workbook.Worksheets[workbook.Worksheets.Add()];
+
+            Worksheet sheet = sheet1;
+            for (int i = 0, j = 0, filling = 0; i < compromise_distances.Count; i++, j = 0, filling++)
+            {
+                if (filling == 1048575)
+                {
+                    filling = 0;
+                    var worksheet_num = workbook.Worksheets.Add();
+                    sheet = workbook.Worksheets[worksheet_num];
+                }
+
+                for (; j < Ranking.m; j++)
+                {
+                    sheet.Cells[CellsHelper.CellIndexToName(filling, j)].PutValue(compromise_distances.ElementAt(i).distance.ElementAt(j));
+                }
+
+                sheet.Cells[CellsHelper.CellIndexToName(filling, j + 1)].PutValue(compromise_distances.ElementAt(i).sum);
+                sheet.Cells[CellsHelper.CellIndexToName(filling, j + 2)].PutValue(compromise_distances.ElementAt(i).max);
+            }
+
+            workbook.Save(workbook_path, SaveFormat.Xlsx);
+            MessageBox.Show("Файл " + workbook_path + " був створений");
+        }
+
+        class HammingDistanceRow
+        {
+            public List<int> distance;
+            public int sum;
+
+            public HammingDistanceRow()
+            {
+
+            }
+
+            public HammingDistanceRow(List<int> distance)
+            {
+                this.distance = distance;
+                sum = distance.Sum();
             }
         }
-        */
 
     }
 }

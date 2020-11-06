@@ -39,7 +39,6 @@ namespace WpfApp2
                     for (int k = 0; k < ranking.n; k++)
                     {
                         temp.Add(Math.Abs(ranking.matrix[i, k] - ranking.matrix[j, k]));
-//                        Console.WriteLine(ranking.matrix[i, k] + "-" + ranking.matrix[j, k]);
                     }
 
                     distances.Add(key, new CookDistanceRow(temp));
