@@ -23,6 +23,8 @@ namespace WpfApp2
     public partial class WindowResult : Window
     {
         Ranking ranking = new Ranking();
+        Cook cook;
+        Hamming hamming;
 
         public WindowResult()
         {
@@ -49,15 +51,6 @@ namespace WpfApp2
             this.ranking.GenMatrixView();
 
             InitializeComponent();
-
-            Cook cook = new Cook(ranking);
-            cook.MinMax();
-
-            var app = new Microsoft.Office.Interop.Excel.Application();
-            var workbook = app.Workbooks.Open(Directory.GetCurrentDirectory() + cook.WorkbookPath);
-
-
-
 
             /*
             Hamming hamming = new Hamming();
@@ -104,8 +97,108 @@ namespace WpfApp2
         {
             if (output_file_path.Text.Length > 0)
             {
-                ranking.WriteRatesMatrixToFile($"{output_file_path.Text}.xlsx");
+                if (ranking.WriteRatesMatrixToFile($"{output_file_path.Text}.xlsx"))
+                {
+                    System.Windows.MessageBox.Show("Файл " + $"{output_file_path.Text}.xlsx" + " був створений");
+                }
             }
         }
+
+        private void action_file_path_GotFocus(object sender, RoutedEventArgs e)
+        {
+            hintOptionallyForActionPath.Visibility = Visibility.Hidden;
+        }
+
+        private void action_file_path_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (action_file_path.Text.Length == 0)
+            {
+                hintOptionallyForActionPath.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void action_file_path_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (action_file_path.Text.Length == 0)
+            {
+                hintOptionallyForActionPath.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void action_file_path_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            using (var fbd = new FolderBrowserDialog())
+            {
+                DialogResult result = fbd.ShowDialog();
+
+                if (!string.IsNullOrWhiteSpace(fbd.SelectedPath))
+                {
+                    action_file_path.Text = fbd.SelectedPath;
+                }
+            }
+        }
+
+        private void button_write_action_Click(object sender, RoutedEventArgs e)
+        {
+            string file_path = $"{action_file_path.Text}.xlsx";
+
+            if ((bool)cook_distances.IsChecked)
+            {
+                if (cook == null)
+                {
+                    InitializeCook();
+                }
+
+                cook.SaveDistancesToWorkbook(file_path);
+            }
+            else
+            if ((bool)cook_all.IsChecked)
+            {
+                if (cook == null)
+                {
+                    InitializeCook();
+                }
+
+                cook.SaveAllDistancesToWorkbook(file_path);
+            }
+            else
+            if ((bool)cook_compromise_min_max.IsChecked)
+            {
+                if (cook == null)
+                {
+                    InitializeCook();
+                }
+
+                cook.SaveCompromisesToWorkbook(file_path);
+            }
+            else
+            if ((bool)hamming_distances.IsChecked)
+            {
+
+            }
+            else
+            if ((bool)hamming_all.IsChecked)
+            {
+
+            }
+            else
+            if ((bool)hamming_compromise_min_max.IsChecked)
+            {
+
+            }
+        }
+
+        private void InitializeCook()
+        {
+            cook = new Cook(ranking);
+            cook.MinMax();
+        }
+
+        private void InitializeHamming()
+        {
+
+        }
+
+
     }
 }

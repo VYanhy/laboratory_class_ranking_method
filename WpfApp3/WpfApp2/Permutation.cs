@@ -8,10 +8,12 @@ namespace WpfApp2
 {
     public static class Permutation
     {
-        public static List<List<int>> permutations = new List<List<int>>();
+        public static List<List<int>> permutations;
 
         public static void CalculatePermutations(int obj_num)
         {
+            permutations = new List<List<int>>();
+
             int[] obj = new int[obj_num];
             for (int i = 0; i < obj_num; i++)
             {

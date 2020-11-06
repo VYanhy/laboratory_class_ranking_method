@@ -99,7 +99,7 @@ namespace WpfApp2
             }
         }
 
-        public void WriteRatesMatrixToFile(string file)
+        public bool WriteRatesMatrixToFile(string file)
         {
             Workbook wb = new Workbook();
             Worksheet sheet = wb.Worksheets[0];
@@ -126,7 +126,8 @@ namespace WpfApp2
 
             wb.Save(file, SaveFormat.Xlsx);
 
-            MessageBox.Show("Файл " + file + " був створений");
+            return true;
+            //MessageBox.Show("Файл " + file + " був створений");
         }
 
         public void ReadRatesMatrixFromFile(string file)
