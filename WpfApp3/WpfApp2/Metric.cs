@@ -10,12 +10,51 @@ namespace WpfApp2
 {
     abstract class Metric
     {
-        protected Ranking ranking;
+        public Ranking ranking;
         protected Dictionary<int, DistanceRow> distances = new Dictionary<int, DistanceRow>();
         protected List<CompromiseRow> all_distances = new List<CompromiseRow>();
         protected List<CompromiseRow> compromise_distances = new List<CompromiseRow>();
         protected int min;
         protected int max;
+
+        public Dictionary<int, DistanceRow> Distances
+        {
+            get
+            {
+                if (distances.Count == 0)
+                {
+                    Distance();
+                }
+
+                return distances;
+            }
+        }
+
+        public List<CompromiseRow> AllDistances
+        {
+            get
+            {
+                if (all_distances.Count == 0)
+                {
+                    MinMax();
+                }
+
+                return all_distances;
+            }
+        }
+
+        public List<CompromiseRow> CompromiseDistances
+        {
+            get
+            {
+                if (compromise_distances.Count == 0)
+                {
+                    MinMax();
+                }
+
+                return compromise_distances;
+            }
+        }
 
         public Metric()
         {
@@ -62,26 +101,21 @@ namespace WpfApp2
 
         public void SaveDistancesToWorkbook(string workbook_path)
         {
-            if (distances.Count == 0)
-            {
-                Distance();
-            }
-
             WriteInitialDataToWorkbook(workbook_path);
             Workbook workbook = new Workbook(workbook_path);
             Worksheet sheet1 = workbook.Worksheets[workbook.Worksheets.Add()];
 
             Worksheet sheet = sheet1;
-            for (int i = 0, j = 0; i < distances.Count; i++, j = 0)
+            for (int i = 0, j = 0; i < Distances.Count; i++, j = 0)
             {
-                sheet.Cells[CellsHelper.CellIndexToName(i, 0)].PutValue(distances.ElementAt(i).Key);
+                sheet.Cells[CellsHelper.CellIndexToName(i, 0)].PutValue(Distances.ElementAt(i).Key);
 
                 for (; j < ranking.n; j++)
                 {
-                    sheet.Cells[CellsHelper.CellIndexToName(i, j + 1)].PutValue(distances.ElementAt(i).Value.distance.ElementAt(j));
+                    sheet.Cells[CellsHelper.CellIndexToName(i, j + 1)].PutValue(Distances.ElementAt(i).Value.distance.ElementAt(j));
                 }
 
-                sheet.Cells[CellsHelper.CellIndexToName(i, j + 1)].PutValue(distances.ElementAt(i).Value.sum);
+                sheet.Cells[CellsHelper.CellIndexToName(i, j + 1)].PutValue(Distances.ElementAt(i).Value.sum);
             }
 
             workbook.Save(workbook_path, SaveFormat.Xlsx);
@@ -95,7 +129,7 @@ namespace WpfApp2
             Worksheet sheet1 = workbook.Worksheets[workbook.Worksheets.Add()];
 
             Worksheet sheet = sheet1;
-            for (int i = 0, j = 0, filling = 0; i < all_distances.Count; i++, j = 0, filling++)
+            for (int i = 0, j = 0, filling = 0; i < AllDistances.Count; i++, j = 0, filling++)
             {
                 if (filling == 1048575)
                 {
@@ -106,11 +140,11 @@ namespace WpfApp2
 
                 for (; j < Ranking.m; j++)
                 {
-                    sheet.Cells[CellsHelper.CellIndexToName(filling, j)].PutValue(all_distances.ElementAt(i).distance.ElementAt(j));
+                    sheet.Cells[CellsHelper.CellIndexToName(filling, j)].PutValue(AllDistances.ElementAt(i).distance.ElementAt(j));
                 }
 
-                sheet.Cells[CellsHelper.CellIndexToName(filling, j + 1)].PutValue(all_distances.ElementAt(i).sum);
-                sheet.Cells[CellsHelper.CellIndexToName(filling, j + 2)].PutValue(all_distances.ElementAt(i).max);
+                sheet.Cells[CellsHelper.CellIndexToName(filling, j + 1)].PutValue(AllDistances.ElementAt(i).sum);
+                sheet.Cells[CellsHelper.CellIndexToName(filling, j + 2)].PutValue(AllDistances.ElementAt(i).max);
             }
 
             workbook.Save(workbook_path, SaveFormat.Xlsx);
@@ -124,7 +158,7 @@ namespace WpfApp2
             Worksheet sheet1 = workbook.Worksheets[workbook.Worksheets.Add()];
 
             Worksheet sheet = sheet1;
-            for (int i = 0, j = 0, filling = 0; i < compromise_distances.Count; i++, j = 0, filling++)
+            for (int i = 0, j = 0, filling = 0; i < CompromiseDistances.Count; i++, j = 0, filling++)
             {
                 if (filling == 1048575)
                 {
@@ -135,11 +169,11 @@ namespace WpfApp2
 
                 for (; j < Ranking.m; j++)
                 {
-                    sheet.Cells[CellsHelper.CellIndexToName(filling, j)].PutValue(compromise_distances.ElementAt(i).distance.ElementAt(j));
+                    sheet.Cells[CellsHelper.CellIndexToName(filling, j)].PutValue(CompromiseDistances.ElementAt(i).distance.ElementAt(j));
                 }
 
-                sheet.Cells[CellsHelper.CellIndexToName(filling, j + 1)].PutValue(compromise_distances.ElementAt(i).sum);
-                sheet.Cells[CellsHelper.CellIndexToName(filling, j + 2)].PutValue(compromise_distances.ElementAt(i).max);
+                sheet.Cells[CellsHelper.CellIndexToName(filling, j + 1)].PutValue(CompromiseDistances.ElementAt(i).sum);
+                sheet.Cells[CellsHelper.CellIndexToName(filling, j + 2)].PutValue(CompromiseDistances.ElementAt(i).max);
             }
 
             workbook.Save(workbook_path, SaveFormat.Xlsx);

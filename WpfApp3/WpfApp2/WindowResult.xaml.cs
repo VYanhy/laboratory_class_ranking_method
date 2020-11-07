@@ -23,8 +23,36 @@ namespace WpfApp2
     public partial class WindowResult : Window
     {
         Ranking ranking = new Ranking();
-        Cook cook;
-        Hamming hamming;
+        Cook cookMetric;
+        Hamming hammingMetric;
+
+        Cook CookMetric
+        {
+            get
+            {
+                if (cookMetric == null)
+                {
+                    cookMetric = new Cook(ranking);
+                }
+
+                return cookMetric;
+            }
+            set { cookMetric = value; }
+        }
+
+        Hamming HammingMetric
+        {
+            get
+            {
+                if (hammingMetric == null)
+                {
+                    hammingMetric = new Hamming(ranking);
+                }
+
+                return hammingMetric;
+            }
+            set { hammingMetric = value; }
+        }
 
         public WindowResult()
         {
@@ -138,79 +166,34 @@ namespace WpfApp2
 
             if ((bool)cook_distances.IsChecked)
             {
-                if (cook == null)
-                {
-                    InitializeCook();
-                }
-
-                cook.SaveDistancesToWorkbook(file_path);
+                CookMetric.SaveDistancesToWorkbook(file_path);
             }
             else
             if ((bool)cook_all.IsChecked)
             {
-                if (cook == null)
-                {
-                    InitializeCook();
-                }
-
-                cook.SaveAllDistancesToWorkbook(file_path);
+                CookMetric.SaveAllDistancesToWorkbook(file_path);
             }
             else
             if ((bool)cook_compromise_min_max.IsChecked)
             {
-                if (cook == null)
-                {
-                    InitializeCook();
-                }
-
-                cook.SaveCompromisesToWorkbook(file_path);
+                CookMetric.SaveCompromisesToWorkbook(file_path);
             }
             else
             if ((bool)hamming_distances.IsChecked)
             {
-                if (hamming == null)
-                {
-                    InitializeHamming();
-                }
-
-                hamming.SaveDistancesToWorkbook(file_path);
+                HammingMetric.SaveDistancesToWorkbook(file_path);
             }
-            /*
             else
             if ((bool)hamming_all.IsChecked)
             {
-                if (hamming == null)
-                {
-                    InitializeHamming();
-                }
-
-                hamming.SaveAllDistancesToWorkbook(file_path);
+                HammingMetric.SaveAllDistancesToWorkbook(file_path);
             }
             else
             if ((bool)hamming_compromise_min_max.IsChecked)
             {
-                if (hamming == null)
-                {
-                    InitializeHamming();
-                }
-
-                hamming.SaveCompromisesToWorkbook(file_path);
+                HammingMetric.SaveCompromisesToWorkbook(file_path);
             }
-            */
         }
-
-        private void InitializeCook()
-        {
-            cook = new Cook(ranking);
-            cook.MinMax();
-        }
-
-        private void InitializeHamming()
-        {
-            hamming = new Hamming(ranking);
-            //hamming.MinMax();
-        }
-
 
     }
 }
