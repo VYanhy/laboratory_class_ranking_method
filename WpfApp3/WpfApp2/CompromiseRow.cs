@@ -6,19 +6,19 @@ using System.Threading.Tasks;
 
 namespace WpfApp2
 {
-    class CalculationCompromiseRow
+    class CompromiseRow
     {
         public List<int> distance;
         public List<int> distance_sum;
         public int sum;
         public int max;
 
-        public CalculationCompromiseRow()
+        public CompromiseRow()
         {
 
         }
 
-        public CalculationCompromiseRow(List<int> distance, List<int> distance_sums)
+        public CompromiseRow(List<int> distance, List<int> distance_sums)
         {
             this.distance = distance;
             this.distance_sum = distance_sums;

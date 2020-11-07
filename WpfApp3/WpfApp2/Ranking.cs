@@ -95,11 +95,11 @@ namespace WpfApp2
 
             for (int i = 0; i < n; i++)
             {
-                expertsChoiceRows.Add(i, ReadExpertRates(filePaths.ElementAt(i)));
+                expertsChoiceRows.Add(i, ReadExpertRanks(filePaths.ElementAt(i)));
             }
         }
 
-        public bool WriteRatesMatrixToFile(string file)
+        public bool WriteRanksMatrixToFile(string file)
         {
             Workbook wb = new Workbook();
             Worksheet sheet = wb.Worksheets[0];
@@ -130,7 +130,45 @@ namespace WpfApp2
             //MessageBox.Show("Файл " + file + " був створений");
         }
 
-        public void ReadRatesMatrixFromFile(string file)
+        public bool WriteRankingsMatrixToFile(string file)
+        {
+            Workbook wb = new Workbook();
+            Worksheet sheet = wb.Worksheets[wb.Worksheets.Add()];
+
+            sheet.Cells[CellsHelper.CellIndexToName(0, 0)].PutValue("№");
+            for (int j = 0; j < n; j++)
+            {
+                sheet.Cells[CellsHelper.CellIndexToName(0, j + 1)].PutValue("Експерт " + (j + 1).ToString());
+            }
+
+            for (int i = 0; i < m; i++)
+            {
+                sheet.Cells[CellsHelper.CellIndexToName(i + 1, 0)].PutValue((i + 1).ToString());
+
+                for (int j = 0; j < n; j++)
+                {
+                    sheet.Cells[CellsHelper.CellIndexToName(i + 1, j + 1)].PutValue(matrix_ranking[i, j].ToString());
+                }
+            }
+
+            int row = m + 2;
+
+            sheet.Cells[CellsHelper.CellIndexToName(row, 0)].PutValue("№");
+            sheet.Cells[CellsHelper.CellIndexToName(row, 1)].PutValue("Назва");
+
+            ProductCollection products = new ProductCollection();
+            for (int i = 0; i < m; i++, row++)
+            {
+                sheet.Cells[CellsHelper.CellIndexToName(row, 0)].PutValue(products.ElementAt(i).ProductId);
+                sheet.Cells[CellsHelper.CellIndexToName(row, 1)].PutValue(products.ElementAt(i).ProductName);
+            }
+
+            wb.Save(file, SaveFormat.Xlsx);
+            return true;
+            //MessageBox.Show("Файл " + file + " був створений");
+        }
+
+        public void ReadRanksMatrixFromFile(string file)
         {
             LoadOptions loadOptions = new LoadOptions(LoadFormat.Xlsx);
             Workbook wb = new Workbook(file, loadOptions);
@@ -147,7 +185,7 @@ namespace WpfApp2
             }
         }
 
-        public static ChoiceRow[] ReadExpertRates(string file)
+        public static ChoiceRow[] ReadExpertRanks(string file)
         {
             LoadOptions loadOptions = new LoadOptions(LoadFormat.Xlsx);
             Workbook wb = new Workbook(file, loadOptions);
@@ -166,7 +204,7 @@ namespace WpfApp2
             return choiceRows;
         }
 
-        public static void WriteExpertRates(string file, ChoiceRow[] choiceRows)
+        public static void WriteExpertRanks(string file, ChoiceRow[] choiceRows)
         {
             Workbook wb = new Workbook();
             Worksheet sheet = wb.Worksheets[0];

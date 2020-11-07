@@ -60,7 +60,7 @@ namespace WpfApp2
             if (output_file_path.Text.Length > 0)
             {
                 Steps();
-                ranking.WriteRatesMatrixToFile($"{output_file_path.Text}.xlsx");
+                ranking.WriteRanksMatrixToFile($"{output_file_path.Text}.xlsx");
             }
         }
 

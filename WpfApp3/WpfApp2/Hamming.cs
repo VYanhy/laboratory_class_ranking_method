@@ -8,26 +8,19 @@ using System.Windows;
 
 namespace WpfApp2
 {
-    class Hamming
+    class Hamming : Metric
     {
-        public Ranking ranking;
-        Dictionary<int, HammingDistanceRow> distances = new Dictionary<int, HammingDistanceRow>();
-        List<CalculationCompromiseRow> all_distances = new List<CalculationCompromiseRow>();
-        List<CalculationCompromiseRow> compromise_distances = new List<CalculationCompromiseRow>();
-        public int min;
-        public int max;
-
-        public Hamming()
+        public Hamming() : base()
         {
 
         }
 
-        public Hamming(Ranking ranking)
+        public Hamming(Ranking ranking) : base(ranking)
         {
-            this.ranking = ranking;
+
         }
 
-        public void HammingDistance()
+        protected override void Distance()
         {
             for (int i = 0; i < Ranking.m; i++)
             {
@@ -48,179 +41,60 @@ namespace WpfApp2
                         temp.Add(val);
                     }
 
-                    distances.Add(key, new HammingDistanceRow(temp));
+                    distances.Add(key, new DistanceRow(temp));
                 }
             }
         }
 
-        public void SaveDistancesToWorkbook(string workbook_path)
+        public override void WriteInitialDataToWorkbook(string workbook_path)
         {
-            if (distances.Count == 0)
-            {
-                HammingDistance();
-            }
-
-            ranking.WriteRatesMatrixToFile(workbook_path);
-            Workbook workbook = new Workbook(workbook_path);
-            Worksheet sheet1 = workbook.Worksheets[workbook.Worksheets.Add()];
-
-            /*
-            Worksheet sheet = sheet1;
-            for (int i = 0, j = 1; i < distances.Count; i++, j = 0)
-            {
-                sheet.Cells[CellsHelper.CellIndexToName(i, 0)].PutValue(distances.ElementAt(i).Key);
-
-                for (; j < ranking.n; j++)
-                {
-                    sheet.Cells[CellsHelper.CellIndexToName(i, j)].PutValue(distances.ElementAt(i).Value.distance.ElementAt(j));
-                }
-
-                sheet.Cells[CellsHelper.CellIndexToName(i, j + 1)].PutValue(distances.ElementAt(i).Value.sum);
-            }
-            */
-
-            Worksheet sheet = sheet1;
-
-            for (int i = 0, j = 0; i < distances.Count; i++, j = 0)
-            {
-                sheet.Cells[CellsHelper.CellIndexToName(i, 0)].PutValue(distances.ElementAt(i).Key);
-
-                for (; j < ranking.n; j++)
-                {
-                    sheet.Cells[CellsHelper.CellIndexToName(i, j + 1)].PutValue(distances.ElementAt(i).Value.distance.ElementAt(j));
-                }
-
-                sheet.Cells[CellsHelper.CellIndexToName(i, j + 1)].PutValue(distances.ElementAt(i).Value.sum);
-            }
-
-            workbook.Save(workbook_path, SaveFormat.Xlsx);
-            MessageBox.Show("Файл " + workbook_path + " був створений");
+            ranking.WriteRankingsMatrixToFile(workbook_path);
         }
 
-        /*
-        public List<CalculationCompromiseRow> MinMax()
-        {
-            FindCompromiseRankings();
-
-            min = all_distances.Min(x => x.sum);
-            foreach (CalculationCompromiseRow c in all_distances)
-            {
-                if (c.sum == min)
-                {
-                    compromise_distances.Add(c);
-                }
-            }
-            max = compromise_distances.Max(x => x.max);
-
-            return compromise_distances;
-        }
-
-        private void FindCompromiseRankings()
-        {
-            if (Permutation.permutations == null)
-            {
-                Permutation.CalculatePermutations(Ranking.m);
-            }
-
-            CalculateAllDistances();
-        }
-
-        private List<CalculationCompromiseRow> CalculateAllDistances()
+        protected override List<CompromiseRow> CalculateAllDistances()
         {
             foreach (List<int> p in Permutation.permutations)
             {
+                List<int> temp = GetRankingVector(p);
                 List<int> distance_sum = new List<int>();
 
-                for (int i = 0, sum = 0; i < Ranking.m; i++, sum = 0)
+                for (int i = 0, sum = 0; i < ranking.n; i++, sum = 0)
                 {
-                    for (int j = 0; j < ranking.n; j++)
+                    for (int j = 0; j < distances.Count; j++)
                     {
-                        sum += Math.Abs(ranking.matrix[i, j] - p.ElementAt(i));
+                        sum += Math.Abs(distances.ElementAt(j).Value.distance.ElementAt(i) - temp.ElementAt(j));
                     }
 
                     distance_sum.Add(sum);
                 }
 
-                all_distances.Add(new CalculationCompromiseRow(p, distance_sum));
+                all_distances.Add(new CompromiseRow(temp, distance_sum));
             }
 
             return all_distances;
         }
 
-        public void SaveAllDistancesToWorkbook(string workbook_path)
+        private List<int> GetRankingVector(List<int> permutation)
         {
-            ranking.WriteRatesMatrixToFile(workbook_path);
-            Workbook workbook = new Workbook(workbook_path);
-            Worksheet sheet1 = workbook.Worksheets[workbook.Worksheets.Add()];
+            List<int> temp = new List<int>();
 
-            Worksheet sheet = sheet1;
-            for (int i = 0, j = 0, filling = 0; i < all_distances.Count; i++, j = 0, filling++)
+            for (int i = 0; i < Ranking.m; i++)
             {
-                if (filling == 1048575)
+                for (int j = i + 1; j < Ranking.m; j++)
                 {
-                    filling = 0;
-                    var worksheet_num = workbook.Worksheets.Add();
-                    sheet = workbook.Worksheets[worksheet_num];
-                }
+                    //int key = Convert.ToInt32((i + 1).ToString() + (j + 1).ToString());
+                    int val;
 
-                for (; j < Ranking.m; j++)
-                {
-                    sheet.Cells[CellsHelper.CellIndexToName(filling, j)].PutValue(all_distances.ElementAt(i).distance.ElementAt(j));
-                }
+                    if (permutation.ElementAt(i) < permutation.ElementAt(j))
+                        val = 1;
+                    else
+                        val = -1;
 
-                sheet.Cells[CellsHelper.CellIndexToName(filling, j + 1)].PutValue(all_distances.ElementAt(i).sum);
-                sheet.Cells[CellsHelper.CellIndexToName(filling, j + 2)].PutValue(all_distances.ElementAt(i).max);
+                    temp.Add(val);
+                }
             }
 
-            workbook.Save(workbook_path, SaveFormat.Xlsx);
-            MessageBox.Show("Файл " + workbook_path + " був створений");
-        }
-
-        public void SaveCompromisesToWorkbook(string workbook_path)
-        {
-            ranking.WriteRatesMatrixToFile(workbook_path);
-            Workbook workbook = new Workbook(workbook_path);
-            Worksheet sheet1 = workbook.Worksheets[workbook.Worksheets.Add()];
-
-            Worksheet sheet = sheet1;
-            for (int i = 0, j = 0, filling = 0; i < compromise_distances.Count; i++, j = 0, filling++)
-            {
-                if (filling == 1048575)
-                {
-                    filling = 0;
-                    var worksheet_num = workbook.Worksheets.Add();
-                    sheet = workbook.Worksheets[worksheet_num];
-                }
-
-                for (; j < Ranking.m; j++)
-                {
-                    sheet.Cells[CellsHelper.CellIndexToName(filling, j)].PutValue(compromise_distances.ElementAt(i).distance.ElementAt(j));
-                }
-
-                sheet.Cells[CellsHelper.CellIndexToName(filling, j + 1)].PutValue(compromise_distances.ElementAt(i).sum);
-                sheet.Cells[CellsHelper.CellIndexToName(filling, j + 2)].PutValue(compromise_distances.ElementAt(i).max);
-            }
-
-            workbook.Save(workbook_path, SaveFormat.Xlsx);
-            MessageBox.Show("Файл " + workbook_path + " був створений");
-        }
-        */
-
-        class HammingDistanceRow
-        {
-            public List<int> distance;
-            public int sum;
-
-            public HammingDistanceRow()
-            {
-
-            }
-
-            public HammingDistanceRow(List<int> distance)
-            {
-                this.distance = distance;
-                sum = distance.Sum();
-            }
+            return temp;
         }
 
     }

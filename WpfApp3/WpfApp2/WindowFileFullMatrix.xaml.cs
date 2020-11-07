@@ -80,7 +80,7 @@ namespace WpfApp2
         private void Read()
         {
             ranking.n = Convert.ToInt32(expert_number.Text);
-            ranking.ReadRatesMatrixFromFile(input_file_path.Text);
+            ranking.ReadRanksMatrixFromFile(input_file_path.Text);
         }
 
         private void button_coef_Click(object sender, RoutedEventArgs e)

@@ -66,11 +66,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="CalculationCompromiseRow.cs" />
+    <Compile Include="CompromiseRow.cs" />
     <Compile Include="ChoiceRow.cs" />
     <Compile Include="ComparisonMatrix.cs" />
     <Compile Include="Cook.cs" />
+    <Compile Include="DistanceRow.cs" />
     <Compile Include="Hamming.cs" />
+    <Compile Include="Metric.cs" />
     <Compile Include="Permutation.cs" />
     <Compile Include="Ranking.cs" />
     <Compile Include="ViewModel.cs" />

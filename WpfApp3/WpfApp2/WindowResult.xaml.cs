@@ -91,7 +91,7 @@ namespace WpfApp2
         {
             if (output_file_path.Text.Length > 0)
             {
-                if (ranking.WriteRatesMatrixToFile($"{output_file_path.Text}.xlsx"))
+                if (ranking.WriteRanksMatrixToFile($"{output_file_path.Text}.xlsx"))
                 {
                     System.Windows.MessageBox.Show("Файл " + $"{output_file_path.Text}.xlsx" + " був створений");
                 }

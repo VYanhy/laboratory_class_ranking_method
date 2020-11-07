@@ -203,7 +203,7 @@ namespace WpfApp2
                 GetFromDataGrid();
 
                 string filePath = $"{filePathWrite.Text}\\{fileNameWrite.Text}.xlsx";
-                Ranking.WriteExpertRates(filePath, choiceRows);
+                Ranking.WriteExpertRanks(filePath, choiceRows);
                 Notify?.Invoke(filePath);
             }
             catch (Exception ex)
