@@ -54,7 +54,7 @@ namespace WpfApp2
 
         protected override List<CompromiseRow> CalculateAllDistances()
         {
-            
+            Distance();
 
             foreach (List<int> p in Permutation.permutations)
             {
