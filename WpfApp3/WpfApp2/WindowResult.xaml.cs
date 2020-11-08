@@ -110,7 +110,7 @@ namespace WpfApp2
 
                 if (!string.IsNullOrWhiteSpace(fbd.SelectedPath))
                 {
-                    output_file_path.Text = fbd.SelectedPath;
+                    output_file_path.Text = fbd.SelectedPath + "\\";
                 }
             }
         }
@@ -155,7 +155,7 @@ namespace WpfApp2
 
                 if (!string.IsNullOrWhiteSpace(fbd.SelectedPath))
                 {
-                    action_file_path.Text = fbd.SelectedPath;
+                    action_file_path.Text = fbd.SelectedPath + "\\";
                 }
             }
         }

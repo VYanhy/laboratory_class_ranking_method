@@ -50,6 +50,7 @@ namespace WpfApp2
             Console.WriteLine();
             */
 
+            /*
             for (int i = 0; i < m; i++)
             {
                 for (int j = 0; j < n; j++)
@@ -58,8 +59,7 @@ namespace WpfApp2
                 }
                 Console.WriteLine();
             }
-            Console.WriteLine();
-
+            */
         }
 
         public void GenMatrixView()
@@ -133,7 +133,7 @@ namespace WpfApp2
         public bool WriteRankingsMatrixToFile(string file)
         {
             Workbook wb = new Workbook();
-            Worksheet sheet = wb.Worksheets[wb.Worksheets.Add()];
+            Worksheet sheet = wb.Worksheets[0];
 
             sheet.Cells[CellsHelper.CellIndexToName(0, 0)].PutValue("№");
             for (int j = 0; j < n; j++)

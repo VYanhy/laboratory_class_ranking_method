@@ -138,7 +138,7 @@ namespace WpfApp2
                     sheet = workbook.Worksheets[worksheet_num];
                 }
 
-                for (; j < Ranking.m; j++)
+                for (; j < AllDistances.ElementAt(0).distance.Count/* Ranking.m*/; j++)
                 {
                     sheet.Cells[CellsHelper.CellIndexToName(filling, j)].PutValue(AllDistances.ElementAt(i).distance.ElementAt(j));
                 }

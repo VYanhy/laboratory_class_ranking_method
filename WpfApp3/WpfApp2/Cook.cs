@@ -32,7 +32,9 @@ namespace WpfApp2
                     for (int k = 0; k < ranking.n; k++)
                     {
                         temp.Add(Math.Abs(ranking.matrix[i, k] - ranking.matrix[j, k]));
+                        //Console.WriteLine("Distance i = " + i + ", j = " + j + ", k = " + k + ", ranking.matrix[i, k] = " + ranking.matrix[i, k] + ", ranking.matrix[j, k] = " + ranking.matrix[j, k] + ", x-y = " + (ranking.matrix[i, k] - ranking.matrix[j, k]));
                     }
+                    //Console.WriteLine();
 
                     distances.Add(key, new DistanceRow(temp));
                 }
@@ -50,14 +52,15 @@ namespace WpfApp2
             {
                 List<int> distance_sum = new List<int>();
 
-                for (int i = 0, sum = 0; i < Ranking.m; i++, sum = 0)
+                for (int j = 0, sum = 0; j < ranking.n; j++, sum = 0)
                 {
-                    for (int j = 0; j < ranking.n; j++)
+                    for (int i = 0; i < Ranking.m; i++)
                     {
                         sum += Math.Abs(ranking.matrix[i, j] - p.ElementAt(i));
+                        //Console.WriteLine("AllDistances i = " + i + ", j = " + j + ", ranking.matrix[i, j] = " + ranking.matrix[i, j] + ", p.ElementAt(i) = " + p.ElementAt(i) + ", sum = " + sum);
                     }
-
                     distance_sum.Add(sum);
+                    //Console.WriteLine();
                 }
 
                 all_distances.Add(new CompromiseRow(p, distance_sum));
@@ -65,7 +68,6 @@ namespace WpfApp2
 
             return all_distances;
         }
-
     }
 }
 
