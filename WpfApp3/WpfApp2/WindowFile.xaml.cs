@@ -77,7 +77,8 @@ namespace WpfApp2
 
         private void button_Click(object sender, RoutedEventArgs e)
         {
-            Steps();
+            GetData();
+
             OpenResult();
         }
 
@@ -85,23 +86,38 @@ namespace WpfApp2
         {
             if (output_file_path.Text.Length > 0)
             {
-                Steps();
+                GetData();
+            
                 ranking.WriteRanksMatrixToFile($"{output_file_path.Text}.xlsx");
             }
         }
 
-        private void Steps()
+        private void GetData()
         {
-            GetFilePath();
-            ranking.ReadFilePath();
-            ranking.GenRatesMatrix();
+            ranking.n = Convert.ToInt32(expert_number.Text);
+
+            if ((bool)files.IsChecked)
+            {
+                GetFilePath();
+                ranking.ReadFilePath();
+                ranking.GenRatesMatrix();
+
+            }
+            else
+            if ((bool)file.IsChecked)
+            {
+                string file_path = input_file_path.Text;
+                file_path = file_path.Remove(file_path.Length - 1);
+                
+                ranking.ReadRanksMatrixFromFile(file_path);
+            }
         }
 
         private void GetFilePath()
         {
             try
             {
-                ranking.n = Convert.ToInt32(expert_number.Text);
+                //ranking.n = Convert.ToInt32(expert_number.Text);
                 ranking.filePaths = new List<string>(ranking.n);
 
                 string temp = input_file_path.Text;
@@ -123,11 +139,8 @@ namespace WpfApp2
                             while (temp.ElementAt(0) == ' ')
                                 temp.Remove(0);
                         }
-
-
                     }
-                    Console.WriteLine(ranking.filePaths[i]);
-
+                    //Console.WriteLine(ranking.filePaths[i]);
                 }
             }
             catch (Exception ex)
@@ -144,7 +157,6 @@ namespace WpfApp2
 
         private void input_file_path_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-
             openFileDialog.Multiselect = true;
             //openFileDialog.Filter = "Excel files (*.xlsx)";
             openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
@@ -156,7 +168,9 @@ namespace WpfApp2
                     input_file_path.Text += filename + ";";
                 }
                 openFileDialogCount += openFileDialog.FileNames.Length;
-                expert_number.Text = openFileDialogCount.ToString();
+
+                if ((bool)files.IsChecked)
+                    expert_number.Text = openFileDialogCount.ToString();
             }
         }
 

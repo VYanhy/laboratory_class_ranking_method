@@ -10,7 +10,6 @@ namespace WpfApp2
 {
     class Hamming : Metric
     {
-        //List<string> stat = new List<string>();
         public Hamming() : base()
         {
 
@@ -66,11 +65,6 @@ namespace WpfApp2
                     for (int j = 0; j < distances.Count; j++)
                     {
                         sum += Math.Abs(distances.ElementAt(j).Value.distance.ElementAt(i) - temp.ElementAt(j));
-                        /*
-                        stat.Add("distances.ElementAt(j).Value.distance.ElementAt(i) = " + distances.ElementAt(j).Value.distance.ElementAt(i).ToString() + ", i" + i.ToString() + ", j" + j.ToString());
-                        stat.Add("temp.ElementAt(j) = " + temp.ElementAt(j).ToString() + ", i" + i.ToString() + ", j" + j.ToString());
-                        stat.Add("sum = " + sum.ToString() + ", i" + i.ToString() + ", j" + j.ToString());
-                        */
                     }
 
                     distance_sum.Add(sum);

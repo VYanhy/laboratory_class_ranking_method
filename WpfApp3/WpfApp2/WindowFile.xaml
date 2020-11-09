@@ -5,10 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp2"
         mc:Ignorable="d"
-        Title="Задання з файлу" Height="240" Width="400">
+        Title="Задання з файлу" 
+        SizeToContent="WidthAndHeight" >
     <Grid>
         <StackPanel Margin="10">
-            <TextBlock FontFamily="Times New Roman" FontSize="14" Text="Кількість експертів"/>
+
+            <RadioButton GroupName="action" Name="files" Content="Файли рангів по експертам" FontFamily="Times New Roman" FontSize="14" />
+            <RadioButton GroupName="action" Name="file" Content="Файл рангів" FontFamily="Times New Roman" FontSize="14" IsChecked="True" />
+
+            <TextBlock Margin="0,5" FontFamily="Times New Roman" FontSize="14" Text="Кількість експертів"/>
             <TextBox x:Name="expert_number" Margin="0,0,0,5"/>
 
             <TextBlock FontFamily="Times New Roman" FontSize="14" Text="Джерело одержання інформації від експертів (файл(и))"/>
