@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.IO;
+using System.Diagnostics;
 
 namespace WpfApp2
 {
@@ -22,6 +23,8 @@ namespace WpfApp2
     /// </summary>
     public partial class WindowResult : Window
     {
+        Stopwatch stopwatch;
+
         Ranking ranking = new Ranking();
         Cook cookMetric;
         Hamming hammingMetric;
@@ -162,6 +165,9 @@ namespace WpfApp2
 
         private void button_write_action_Click(object sender, RoutedEventArgs e)
         {
+            stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             string file_path = $"{action_file_path.Text}.xlsx";
 
             if ((bool)cook_distances.IsChecked)
@@ -193,6 +199,9 @@ namespace WpfApp2
             {
                 HammingMetric.SaveCompromisesToWorkbook(file_path);
             }
+
+            stopwatch.Stop();
+            time.Text = stopwatch.ElapsedMilliseconds.ToString() + " мс";
         }
 
     }
