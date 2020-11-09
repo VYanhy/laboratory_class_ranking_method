@@ -19,6 +19,27 @@ namespace WpfApp2
         public static String[] rowHeaders;
         public int[,] matrix;
         public int[,] matrix_ranking;
+        public int[,] MatrixRanking
+        {
+            get
+            {
+                if (matrix_ranking == null)
+                {
+                    matrix_ranking = new int[m, n];
+
+                    for (int i = 0; i < m; i++)
+                    {
+                        for (int j = 0; j < n; j++)
+                        {
+                            matrix_ranking[matrix[i, j] - 1, j] = i + 1;
+                        }
+                    }
+
+                }
+                return matrix_ranking;
+            }
+        }
+
         public static string[,] matrix_view;
 
         public Dictionary<int, ChoiceRow[]> expertsChoiceRows;
@@ -147,7 +168,7 @@ namespace WpfApp2
 
                 for (int j = 0; j < n; j++)
                 {
-                    sheet.Cells[CellsHelper.CellIndexToName(i + 1, j + 1)].PutValue(matrix_ranking[i, j].ToString());
+                    sheet.Cells[CellsHelper.CellIndexToName(i + 1, j + 1)].PutValue(MatrixRanking[i, j].ToString());
                 }
             }
 

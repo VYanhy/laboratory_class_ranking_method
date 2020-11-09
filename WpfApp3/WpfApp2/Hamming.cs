@@ -33,7 +33,7 @@ namespace WpfApp2
                     {
                         int val;
 
-                        if (ranking.matrix[i, k] < ranking.matrix[j, k])
+                        if (ranking.MatrixRanking[i, k] < ranking.MatrixRanking[j, k])
                             val = 1;
                         else
                             val = -1;
@@ -53,7 +53,7 @@ namespace WpfApp2
 
         protected override List<CompromiseRow> CalculateAllDistances()
         {
-            Distance();
+            //Distance();
 
             foreach (List<int> p in Permutation.permutations)
             {
@@ -62,9 +62,9 @@ namespace WpfApp2
 
                 for (int i = 0, sum = 0; i < ranking.n; i++, sum = 0)
                 {
-                    for (int j = 0; j < distances.Count; j++)
+                    for (int j = 0; j < Distances.Count; j++)
                     {
-                        sum += Math.Abs(distances.ElementAt(j).Value.distance.ElementAt(i) - temp.ElementAt(j));
+                        sum += Math.Abs(Distances.ElementAt(j).Value.distance.ElementAt(i) - temp.ElementAt(j));
                     }
 
                     distance_sum.Add(sum);
