@@ -199,10 +199,41 @@ namespace WpfApp2
             {
                 HammingMetric.SaveCompromisesToWorkbook(file_path);
             }
+            else
+            if ((bool)competence_cook.IsChecked)
+            {
+                CookMetric.ReadCompromisesFromWorkbook(file_path);
+                CookMetric.ExpertCompetence();
+            }
+            else
+            if ((bool)competence_hamming.IsChecked)
+            {
+                HammingMetric.ReadCompromisesFromWorkbook(file_path);
+                HammingMetric.ExpertCompetence();
+            }
 
             stopwatch.Stop();
             time.Text = stopwatch.ElapsedMilliseconds.ToString() + " мс";
         }
 
+        private void action_read_file_path_GotFocus(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void action_read_file_path_LostFocus(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void action_read_file_path_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        private void action_read_file_path_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+
+        }
     }
 }
