@@ -17,6 +17,9 @@ namespace WpfApp2
         protected int min;
         protected int max;
 
+        Dictionary<int, double> competence = new Dictionary<int, double>();
+
+
         public Dictionary<int, DistanceRow> Distances
         {
             get
@@ -179,6 +182,108 @@ namespace WpfApp2
             workbook.Save(workbook_path, SaveFormat.Xlsx);
             MessageBox.Show("Файл " + workbook_path + " був створений");
         }
+
+        public void SaveCompromisesToWorkbookWithSumsByExpert(string workbook_path)
+        {
+            WriteInitialDataToWorkbook(workbook_path);
+            Workbook workbook = new Workbook(workbook_path);
+            Worksheet sheet1 = workbook.Worksheets[workbook.Worksheets.Add()];
+
+            Worksheet sheet = sheet1;
+            for (int i = 0, j = 0, filling = 0; i < CompromiseDistances.Count; i++, j = 0, filling++)
+            {
+                if (filling == 1048575)
+                {
+                    filling = 0;
+                    var worksheet_num = workbook.Worksheets.Add();
+                    sheet = workbook.Worksheets[worksheet_num];
+                }
+
+                for (; j < Ranking.m; j++)
+                {
+                    sheet.Cells[CellsHelper.CellIndexToName(filling, j)].PutValue(CompromiseDistances.ElementAt(i).distance.ElementAt(j));
+                }
+
+                for (; j < ranking.n; j++)
+                {
+                    sheet.Cells[CellsHelper.CellIndexToName(filling, j + 1)].PutValue(CompromiseDistances.ElementAt(i).distance_sum.ElementAt(j));
+                }
+
+                sheet.Cells[CellsHelper.CellIndexToName(filling, j + 1)].PutValue(CompromiseDistances.ElementAt(i).sum);
+                sheet.Cells[CellsHelper.CellIndexToName(filling, j + 2)].PutValue(CompromiseDistances.ElementAt(i).max);
+            }
+
+            workbook.Save(workbook_path, SaveFormat.Xlsx);
+            MessageBox.Show("Файл " + workbook_path + " був створений");
+        }
+
+
+        protected abstract void ReadMatrixForCompromises(Worksheet sheetMatrix);
+
+        public void ReadCompromisesFromWorkbook(string workbook_path)
+        {
+            Workbook workbook = new Workbook(workbook_path);
+            Worksheet sheetMatrix = workbook.Worksheets[0];
+            Worksheet sheetWithCompromises = workbook.Worksheets[2];
+
+            ReadMatrixForCompromises(sheetMatrix);
+
+            //int colcount = sheetWithCompromises.Cells.Columns.Count;
+            int rowcount = sheetWithCompromises.Cells.Rows.Count;
+
+            for (int i = 0, j = 0; i < rowcount; i++, j = 0)
+            {
+                List<int> temp_distances = new List<int>();
+                List<int> temp_distance_sum = new List<int>();
+
+                for (; j < Ranking.m; j++)
+                {
+                    temp_distances.Add(
+                        Convert.ToInt32(
+                        sheetWithCompromises.Cells[CellsHelper.CellIndexToName(i, j)].Value));
+                }
+
+                for (; j < ranking.n; j++)
+                {
+                    temp_distance_sum.Add(
+                        Convert.ToInt32(
+                        sheetWithCompromises.Cells[CellsHelper.CellIndexToName(i, j + 1)].Value));
+                }
+
+                compromise_distances.Add(new CompromiseRow(temp_distances, temp_distance_sum));
+            }
+        }
+
+        Random rand = new Random();
+        public void ExpertCompetence()
+        {
+            int compromise_num = rand.Next(0, CompromiseDistances.Count);
+            CompromiseRow compromise = CompromiseDistances.ElementAt(compromise_num);
+            double denominator = compromise.max;
+
+            for (int i = 0; i < compromise.distance_sum.Count; i++)
+            {
+                competence.Add(i, Math.Round(
+                    ((denominator - compromise.distance_sum.ElementAt(i)) / denominator), 2);
+            }
+
+            if (competence.Values.Sum() != 0)
+            {
+                double min = competence.Values.Min();
+                List<int> min_index_list = (from x in competence where x.Value == min select x.Key).ToList();
+                
+                double sum_oth = (from x in competence where x.Value != min select x.Value).ToList().Sum();
+
+                min_index_list.ForEach(i =>
+                {
+                    competence[i] = (1 - sum_oth) / min_index_list.Count;
+                });
+            }
+
+        }
+
+
+
 
     }
 }
