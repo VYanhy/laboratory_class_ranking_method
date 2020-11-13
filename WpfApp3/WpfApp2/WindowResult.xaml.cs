@@ -215,13 +215,13 @@ namespace WpfApp2
             if ((bool)competence_cook.IsChecked)
             {
                 CookMetric.ExpertCompetence();
-                CookMetric.WriteCompetenceToWorkbook(file_path);
+                CookMetric.SaveCompetenceToWorkbook(file_path);
             }
             else
             if ((bool)competence_hamming.IsChecked)
             {
                 HammingMetric.ExpertCompetence();
-                HammingMetric.WriteCompetenceToWorkbook(file_path);
+                HammingMetric.SaveCompetenceToWorkbook(file_path);
             }
 
             stopwatch.Stop();
@@ -277,15 +277,14 @@ namespace WpfApp2
         {
             if ((bool)competence_cook_read.IsChecked)
             {
-                CookMetric.ReadCompromisesFromWorkbook(file_path_read.Text);
-                CookMetric.ExpertCompetence();
+                CookMetric.ReadInitialMatrixAndCompromisesFromWorkbook(file_path_read.Text);
             }
             else 
             if ((bool)competence_hamming_read.IsChecked)
             {
-                HammingMetric.ReadCompromisesFromWorkbook(file_path_read.Text);
-                HammingMetric.ExpertCompetence();
+                HammingMetric.ReadInitialMatrixAndCompromisesFromWorkbook(file_path_read.Text);
             }
+            MessageBox.Show("Компромісні ранжування зчитані");
         }
     }
 }

@@ -41,7 +41,7 @@ namespace WpfApp2
             }
         }
 
-        public override void WriteInitialDataToWorkbook(string workbook_path)
+        public override void SaveInitialDataToWorkbook(string workbook_path)
         {
             ranking.WriteRanksMatrixToFile(workbook_path);
         }

@@ -58,29 +58,6 @@ namespace WpfApp2
                     matrix_ranking[matrix[i, j] - 1, j] = i + 1;
                 }
             }
-
-            /*
-            for (int i = 0; i < m; i++)
-            {
-                for (int j = 0; j < n; j++)
-                {
-                    Console.Write(matrix[i, j] + " ");
-                }
-                Console.WriteLine();
-            }
-            Console.WriteLine();
-            */
-
-            /*
-            for (int i = 0; i < m; i++)
-            {
-                for (int j = 0; j < n; j++)
-                {
-                    Console.Write(matrix_ranking[i, j] + " ");
-                }
-                Console.WriteLine();
-            }
-            */
         }
 
         public void GenMatrixView()
