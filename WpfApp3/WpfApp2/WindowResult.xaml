@@ -34,11 +34,13 @@
             <RadioButton FontFamily="Times New Roman" FontSize="14" GroupName="action" Name="cook_distances" Content="Відстані Кука"/>
             <RadioButton FontFamily="Times New Roman" FontSize="14" GroupName="action" Name="cook_all" Content="Відстані Кука для всіх можливих комбінацій"/>
             <RadioButton FontFamily="Times New Roman" FontSize="14" GroupName="action" Name="cook_compromise_min_max" Content="Компромісне ранжування через метрику Кука (мінімаксний критерій)"/>
+            <RadioButton FontFamily="Times New Roman" FontSize="14" GroupName="action" Name="cook_compromise_min_max_with_sums" Content="Компромісне ранжування через метрику Кука із сумами по експертам (мінімаксний критерій)"/>
             <RadioButton FontFamily="Times New Roman" FontSize="14" GroupName="action" Name="hamming_distances" Content="Відстані Хемінга"/>
             <RadioButton FontFamily="Times New Roman" FontSize="14" GroupName="action" Name="hamming_all" Content="Відстані Хемінга для всіх можливих комбінацій"/>
             <RadioButton FontFamily="Times New Roman" FontSize="14" GroupName="action" Name="hamming_compromise_min_max" Content="Компромісне ранжування через метрику Хемінга (мінімаксний критерій)"/>
-            <RadioButton FontFamily="Times New Roman" FontSize="14" GroupName="action" Name="competence_cook" Content="Компетенції експертів за метрикою Хемінга (мінімаксний критерій)"/>
-            <RadioButton FontFamily="Times New Roman" FontSize="14" GroupName="action" Name="competence_hamming" Content="Компромісне ранжування через метрику Хемінга (мінімаксний критерій)"/>
+            <RadioButton FontFamily="Times New Roman" FontSize="14" GroupName="action" Name="hamming_compromise_min_max_with_sums" Content="Компромісне ранжування через метрику Хемінга із сумами по експертам (мінімаксний критерій)"/>
+            <RadioButton FontFamily="Times New Roman" FontSize="14" GroupName="action" Name="competence_cook" Content="Компетенції експертів за метрикою Кука (за результатами мінімаксного критерію)" IsChecked="True" />
+            <RadioButton FontFamily="Times New Roman" FontSize="14" GroupName="action" Name="competence_hamming" Content="Компетенції експертів за метрикою Хемінга (за результатами мінімаксного критерію)" IsChecked="True" />
 
             <Grid Margin="0,5,0,5">
                 <TextBlock FontFamily="Times New Roman" FontSize="14" Margin="5,2" Text="Шлях та назва файлу з результатами" Foreground="Gray" Name="hintOptionallyForActionPath" />
@@ -49,15 +51,15 @@
             <Button x:Name="button_write_action" Content="Записати результати в файл" Click="button_write_action_Click" FontFamily="Times New Roman" FontSize="14" />
 
             <TextBlock FontFamily="Times New Roman" FontSize="14" Margin="0,5" Text="Оберіть необхідну дію після зчитування файлу:" />
-            <RadioButton FontFamily="Times New Roman" FontSize="14" GroupName="action_read" Name="competence_cook" Content="Визначити компетентності на основі компроміних ранжувань (за метрикою Кука)" IsChecked="True"/>
-            <RadioButton FontFamily="Times New Roman" FontSize="14" GroupName="action_read" Name="competence_hamming" Content="Визначити компетентності на основі компроміних ранжувань (за метрикою Хемінга)" />
+            <RadioButton FontFamily="Times New Roman" FontSize="14" GroupName="action_read" Name="competence_cook_read" Content="Визначити компетентності на основі компроміних ранжувань (за метрикою Кука)" IsChecked="True"/>
+            <RadioButton FontFamily="Times New Roman" FontSize="14" GroupName="action_read" Name="competence_hamming_read" Content="Визначити компетентності на основі компроміних ранжувань (за метрикою Хемінга)" />
             <Grid Margin="0,5,0,5">
                 <TextBlock FontFamily="Times New Roman" FontSize="14" Margin="5,2" Text="Шлях файлу для зчитування" Foreground="Gray" Name="hintOptionallyForReadPath" />
-                <TextBox x:Name="action_read_file_path" Background="Transparent" VerticalContentAlignment="Center"
+                <TextBox x:Name="file_path_read" Background="Transparent" VerticalContentAlignment="Center"
                          GotFocus="action_read_file_path_GotFocus" LostFocus="action_read_file_path_LostFocus" TextChanged="action_read_file_path_TextChanged" 
                          MouseDoubleClick="action_read_file_path_MouseDoubleClick"/>
             </Grid>
-            <Button x:Name="button_read_action" Content="Записати результати в файл" Click="button_write_action_Click" FontFamily="Times New Roman" FontSize="14" />
+            <Button x:Name="button_read_action" Content="Прочитати дані з файлу" Click="button_read_action_Click" FontFamily="Times New Roman" FontSize="14" />
 
 
 

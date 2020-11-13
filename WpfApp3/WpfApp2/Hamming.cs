@@ -99,5 +99,39 @@ namespace WpfApp2
             return temp;
         }
 
+        protected override void ReadInitialMatrix(string workbook_path)
+        {
+            ranking.ReadRankingMatrixFromFile(workbook_path);
+        }
+
+        protected override void ReadCompromisesFromWorksheet(Worksheet worksheet)
+        {
+            int rowcount = worksheet.Cells.Rows.Count;
+            int m = Ranking.m;
+            int colcount = (m * m - m) / 2;
+
+            for (int i = 0, j = 0; i < rowcount; i++, j = 0)
+            {
+                List<int> temp_distances = new List<int>();
+                List<int> temp_distance_sum = new List<int>();
+
+
+                for (; j < colcount; j++)
+                {
+                    temp_distances.Add(
+                        Convert.ToInt32(
+                        worksheet.Cells[CellsHelper.CellIndexToName(i, j)].Value));
+                }
+
+                for (; j < ranking.n; j++)
+                {
+                    temp_distance_sum.Add(
+                        Convert.ToInt32(
+                        worksheet.Cells[CellsHelper.CellIndexToName(i, j + 1)].Value));
+                }
+
+                compromise_distances.Add(new CompromiseRow(temp_distances, temp_distance_sum));
+            }
+        }
     }
 }

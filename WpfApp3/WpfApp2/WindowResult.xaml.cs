@@ -15,6 +15,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.IO;
 using System.Diagnostics;
+using MessageBox = System.Windows.MessageBox;
+using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 
 namespace WpfApp2
 {
@@ -185,6 +187,11 @@ namespace WpfApp2
                 CookMetric.SaveCompromisesToWorkbook(file_path);
             }
             else
+            if ((bool)cook_compromise_min_max_with_sums.IsChecked)
+            {
+                CookMetric.SaveCompromisesToWorkbookWithSumsByExpert(file_path);
+            }
+            else
             if ((bool)hamming_distances.IsChecked)
             {
                 HammingMetric.SaveDistancesToWorkbook(file_path);
@@ -200,16 +207,21 @@ namespace WpfApp2
                 HammingMetric.SaveCompromisesToWorkbook(file_path);
             }
             else
+            if ((bool)hamming_compromise_min_max_with_sums.IsChecked)
+            {
+                HammingMetric.SaveCompromisesToWorkbookWithSumsByExpert(file_path);
+            }
+            else
             if ((bool)competence_cook.IsChecked)
             {
-                CookMetric.ReadCompromisesFromWorkbook(file_path);
                 CookMetric.ExpertCompetence();
+                CookMetric.WriteCompetenceToWorkbook(file_path);
             }
             else
             if ((bool)competence_hamming.IsChecked)
             {
-                HammingMetric.ReadCompromisesFromWorkbook(file_path);
                 HammingMetric.ExpertCompetence();
+                HammingMetric.WriteCompetenceToWorkbook(file_path);
             }
 
             stopwatch.Stop();
@@ -218,22 +230,62 @@ namespace WpfApp2
 
         private void action_read_file_path_GotFocus(object sender, RoutedEventArgs e)
         {
-
+            hintOptionallyForReadPath.Visibility = Visibility.Hidden;
         }
 
         private void action_read_file_path_LostFocus(object sender, RoutedEventArgs e)
         {
-
+            if (file_path_read.Text.Length == 0)
+            {
+                hintOptionallyForReadPath.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                hintOptionallyForReadPath.Visibility = Visibility.Hidden;
+            }
         }
 
         private void action_read_file_path_TextChanged(object sender, TextChangedEventArgs e)
         {
-
+            if (file_path_read.Text.Length == 0)
+            {
+                hintOptionallyForReadPath.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                hintOptionallyForReadPath.Visibility = Visibility.Hidden;
+            }
         }
 
         private void action_read_file_path_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Multiselect = false;
+            //openFileDialog.Filter = "Excel files (*.xlsx)";
+            openFileDialog.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
 
+            if (openFileDialog.ShowDialog() == true)
+            {
+                foreach (string filename in openFileDialog.FileNames)
+                {
+                    file_path_read.Text += filename;
+                }
+            }
+        }
+
+        private void button_read_action_Click(object sender, RoutedEventArgs e)
+        {
+            if ((bool)competence_cook_read.IsChecked)
+            {
+                CookMetric.ReadCompromisesFromWorkbook(file_path_read.Text);
+                CookMetric.ExpertCompetence();
+            }
+            else 
+            if ((bool)competence_hamming_read.IsChecked)
+            {
+                HammingMetric.ReadCompromisesFromWorkbook(file_path_read.Text);
+                HammingMetric.ExpertCompetence();
+            }
         }
     }
 }

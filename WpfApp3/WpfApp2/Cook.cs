@@ -68,6 +68,40 @@ namespace WpfApp2
 
             return all_distances;
         }
+
+        protected override void ReadInitialMatrix(string workbook_path)
+        {
+            ranking.ReadRanksMatrixFromFile(workbook_path);
+        }
+
+        protected override void ReadCompromisesFromWorksheet(Worksheet worksheet)
+        {
+            int rowcount = worksheet.Cells.Rows.Count;
+
+            for (int i = 0, j = 0; i < rowcount; i++, j = 0)
+            {
+                List<int> temp_distances = new List<int>();
+                List<int> temp_distance_sum = new List<int>();
+
+
+                for (; j < Ranking.m; j++)
+                {
+                    temp_distances.Add(
+                        Convert.ToInt32(
+                        worksheet.Cells[CellsHelper.CellIndexToName(i, j)].Value));
+                }
+
+                for (int k = 0; k < ranking.n; k++, j++)
+                {
+                    temp_distance_sum.Add(
+                        Convert.ToInt32(
+                        worksheet.Cells[CellsHelper.CellIndexToName(i, j + 1)].Value));
+                }
+
+                compromise_distances.Add(new CompromiseRow(temp_distances, temp_distance_sum));
+            }
+        }
+
     }
 }
 

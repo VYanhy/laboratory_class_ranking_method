@@ -88,16 +88,25 @@ namespace WpfApp2
         public List<CompromiseRow> MinMax()
         {
             FindCompromiseRows();
+            List<CompromiseRow> temp = new List<CompromiseRow>();
 
             min = all_distances.Min(x => x.sum);
             foreach (CompromiseRow c in all_distances)
             {
                 if (c.sum == min)
                 {
+                    temp.Add(c);
+                }
+            }
+            max = temp.Max(x => x.max);
+
+            foreach (CompromiseRow c in temp)
+            {
+                if (c.max == max)
+                {
                     compromise_distances.Add(c);
                 }
             }
-            max = compromise_distances.Max(x => x.max);
 
             return compromise_distances;
         }
@@ -170,7 +179,7 @@ namespace WpfApp2
                     sheet = workbook.Worksheets[worksheet_num];
                 }
 
-                for (; j < Ranking.m; j++)
+                for (; j < CompromiseDistances.ElementAt(i).distance.Count; j++)
                 {
                     sheet.Cells[CellsHelper.CellIndexToName(filling, j)].PutValue(CompromiseDistances.ElementAt(i).distance.ElementAt(j));
                 }
@@ -199,72 +208,62 @@ namespace WpfApp2
                     sheet = workbook.Worksheets[worksheet_num];
                 }
 
-                for (; j < Ranking.m; j++)
+                for (; j < CompromiseDistances.ElementAt(i).distance.Count; j++)
                 {
                     sheet.Cells[CellsHelper.CellIndexToName(filling, j)].PutValue(CompromiseDistances.ElementAt(i).distance.ElementAt(j));
                 }
 
-                for (; j < ranking.n; j++)
+                for (int k = 0; k < ranking.n; k++, j++)
                 {
-                    sheet.Cells[CellsHelper.CellIndexToName(filling, j + 1)].PutValue(CompromiseDistances.ElementAt(i).distance_sum.ElementAt(j));
+                    sheet.Cells[CellsHelper.CellIndexToName(filling, j + 1)].PutValue(CompromiseDistances.ElementAt(i).distance_sum.ElementAt(k));
                 }
 
-                sheet.Cells[CellsHelper.CellIndexToName(filling, j + 1)].PutValue(CompromiseDistances.ElementAt(i).sum);
-                sheet.Cells[CellsHelper.CellIndexToName(filling, j + 2)].PutValue(CompromiseDistances.ElementAt(i).max);
+                sheet.Cells[CellsHelper.CellIndexToName(filling, j + 2)].PutValue(CompromiseDistances.ElementAt(i).sum);
+                sheet.Cells[CellsHelper.CellIndexToName(filling, j + 3)].PutValue(CompromiseDistances.ElementAt(i).max);
             }
 
             workbook.Save(workbook_path, SaveFormat.Xlsx);
             MessageBox.Show("Файл " + workbook_path + " був створений");
         }
 
-
-        protected abstract void ReadMatrixForCompromises(Worksheet sheetMatrix);
+        protected abstract void ReadInitialMatrix(string workbook_path);
+        protected abstract void ReadCompromisesFromWorksheet(Worksheet worksheet);
 
         public void ReadCompromisesFromWorkbook(string workbook_path)
         {
             Workbook workbook = new Workbook(workbook_path);
-            Worksheet sheetMatrix = workbook.Worksheets[0];
-            Worksheet sheetWithCompromises = workbook.Worksheets[2];
 
-            ReadMatrixForCompromises(sheetMatrix);
-
-            //int colcount = sheetWithCompromises.Cells.Columns.Count;
-            int rowcount = sheetWithCompromises.Cells.Rows.Count;
-
-            for (int i = 0, j = 0; i < rowcount; i++, j = 0)
-            {
-                List<int> temp_distances = new List<int>();
-                List<int> temp_distance_sum = new List<int>();
-
-                for (; j < Ranking.m; j++)
-                {
-                    temp_distances.Add(
-                        Convert.ToInt32(
-                        sheetWithCompromises.Cells[CellsHelper.CellIndexToName(i, j)].Value));
-                }
-
-                for (; j < ranking.n; j++)
-                {
-                    temp_distance_sum.Add(
-                        Convert.ToInt32(
-                        sheetWithCompromises.Cells[CellsHelper.CellIndexToName(i, j + 1)].Value));
-                }
-
-                compromise_distances.Add(new CompromiseRow(temp_distances, temp_distance_sum));
-            }
+            ReadInitialMatrix(workbook_path);
+            ReadCompromisesFromWorksheet(workbook.Worksheets[2]);
         }
 
         Random rand = new Random();
         public void ExpertCompetence()
         {
+            competence = new Dictionary<int, double>();
             int compromise_num = rand.Next(0, CompromiseDistances.Count);
             CompromiseRow compromise = CompromiseDistances.ElementAt(compromise_num);
-            double denominator = compromise.max;
+
+            List<double> temp = new List<double>();
+
+            double denominator = 1;
+            compromise.distance_sum.ForEach(i =>
+            {
+                denominator = determineLCD((int)denominator, i);
+            });
+
+            temp = new List<double>();
+            compromise.distance_sum.ForEach(i =>
+            {
+                temp.Add((int)denominator / (int)i);
+            });
+            double numerator = temp.Sum();
+
 
             for (int i = 0; i < compromise.distance_sum.Count; i++)
             {
                 competence.Add(i, Math.Round(
-                    ((denominator - compromise.distance_sum.ElementAt(i)) / denominator), 2);
+                    ( (1 / (double)compromise.distance_sum.ElementAt(i)) / (numerator / denominator)), 2));
             }
 
             if (competence.Values.Sum() != 0)
@@ -276,14 +275,50 @@ namespace WpfApp2
 
                 min_index_list.ForEach(i =>
                 {
-                    competence[i] = (1 - sum_oth) / min_index_list.Count;
+                    competence[i] = competence[i] + ((1 - sum_oth) / min_index_list.Count);
                 });
+
             }
 
         }
 
+        public void WriteCompetenceToWorkbook(string workbook_path)
+        {
+            SaveCompromisesToWorkbookWithSumsByExpert(workbook_path);
+            Workbook workbook = new Workbook(workbook_path);
+            Worksheet sheet = workbook.Worksheets[workbook.Worksheets.Add()];
 
+            for (int i = 0; i < competence.Count; i++)
+            {
+                sheet.Cells[CellsHelper.CellIndexToName(i, 0)].PutValue("Експерт " + competence.ElementAt(i).Key);
+                sheet.Cells[CellsHelper.CellIndexToName(i, 1)].PutValue(competence.ElementAt(i).Value);
+            }
 
+            workbook.Save(workbook_path, SaveFormat.Xlsx);
+            MessageBox.Show("У файл " + workbook_path + " була додана інформація про компетентності експертів");
+        }
+
+        private static int determineLCD(int a, int b)
+        {
+            int num1, num2;
+            if (a > b)
+            {
+                num1 = a; num2 = b;
+            }
+            else
+            {
+                num1 = b; num2 = a;
+            }
+
+            for (int i = 1; i < num2; i++)
+            {
+                if ((num1 * i) % num2 == 0)
+                {
+                    return i * num1;
+                }
+            }
+            return num1 * num2;
+        }
 
     }
 }

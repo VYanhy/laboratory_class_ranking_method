@@ -206,6 +206,23 @@ namespace WpfApp2
             }
         }
 
+        public void ReadRankingMatrixFromFile(string file)
+        {
+            LoadOptions loadOptions = new LoadOptions(LoadFormat.Xlsx);
+            Workbook wb = new Workbook(file, loadOptions);
+            Worksheet sheet = wb.Worksheets[0];
+
+            matrix = new int[m, n];
+
+            for (int i = 0; i < m; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    matrix_ranking[i, j] = Convert.ToInt32(sheet.Cells[CellsHelper.CellIndexToName(i + 1, j + 2)].Value);
+                }
+            }
+        }
+
         public static ChoiceRow[] ReadExpertRanks(string file)
         {
             LoadOptions loadOptions = new LoadOptions(LoadFormat.Xlsx);
