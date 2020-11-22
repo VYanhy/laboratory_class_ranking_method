@@ -8,16 +8,25 @@ using System.Windows;
 
 namespace WpfApp2
 {
+    enum Median
+    {
+        CookSayford,
+        GV,
+        KemenySnell,
+        VG,
+        None
+    }
+
     abstract class Metric
     {
+
         #region fields
 
         public Ranking ranking;
         protected Dictionary<int, DistanceRow> distances = new Dictionary<int, DistanceRow>();
         protected List<CompromiseRow> all_distances = new List<CompromiseRow>();
         protected List<CompromiseRow> compromise_distances = new List<CompromiseRow>();
-        protected int min;
-        protected int max;
+        protected Median median = Median.None;
 
         Dictionary<int, double> competence = new Dictionary<int, double>();
         Random rand = new Random();
@@ -46,23 +55,29 @@ namespace WpfApp2
             {
                 if (all_distances.Count == 0)
                 {
-                    MinMax();
+                    FindPermutations();
                 }
 
                 return all_distances;
             }
         }
 
-        public List<CompromiseRow> CompromiseDistances
+        public abstract List<CompromiseRow> CompromiseDistances { get; }
+
+        public Median Median
         {
             get
             {
-                if (compromise_distances.Count == 0)
+                return median;
+            }
+            set
+            {
+                if (median != Median.None)
                 {
-                    MinMax();
+                    compromise_distances = new List<CompromiseRow>();
                 }
 
-                return compromise_distances;
+                median = value;
             }
         }
 
@@ -111,10 +126,12 @@ namespace WpfApp2
 
                 for (; j < ranking.n; j++)
                 {
-                    sheet.Cells[CellsHelper.CellIndexToName(i, j + 1)].PutValue(Distances.ElementAt(i).Value.distance.ElementAt(j));
+                    sheet.Cells[CellsHelper.CellIndexToName(i, j + 2)].PutValue(Distances.ElementAt(i).Value.distance.ElementAt(j));
                 }
 
-                sheet.Cells[CellsHelper.CellIndexToName(i, j + 1)].PutValue(Distances.ElementAt(i).Value.sum);
+                j++;
+
+                sheet.Cells[CellsHelper.CellIndexToName(i, j + 2)].PutValue(Distances.ElementAt(i).Value.sum);
             }
 
             workbook.Save(workbook_path, SaveFormat.Xlsx);
@@ -142,6 +159,13 @@ namespace WpfApp2
                     sheet.Cells[CellsHelper.CellIndexToName(filling, j)].PutValue(AllDistances.ElementAt(i).distance.ElementAt(j));
                 }
 
+                for (int k = 0; k < AllDistances.ElementAt(0).distance_sum.Count/* Ranking.m*/; j++, k++)
+                {
+                    sheet.Cells[CellsHelper.CellIndexToName(filling, j + 1)].PutValue(AllDistances.ElementAt(i).distance_sum.ElementAt(k));
+                }
+
+                j++;
+
                 sheet.Cells[CellsHelper.CellIndexToName(filling, j + 1)].PutValue(AllDistances.ElementAt(i).sum);
                 sheet.Cells[CellsHelper.CellIndexToName(filling, j + 2)].PutValue(AllDistances.ElementAt(i).max);
             }
@@ -150,6 +174,7 @@ namespace WpfApp2
             MessageBox.Show("Файл " + workbook_path + " був створений");
         }
 
+        /*
         public void SaveCompromisesToWorkbook(string workbook_path)
         {
             SaveInitialDataToWorkbook(workbook_path);
@@ -178,7 +203,8 @@ namespace WpfApp2
             workbook.Save(workbook_path, SaveFormat.Xlsx);
             MessageBox.Show("Файл " + workbook_path + " був створений");
         }
-
+        */
+        
         public void SaveCompromisesToWorkbookWithSumsByExpert(string workbook_path)
         {
             SaveInitialDataToWorkbook(workbook_path);
@@ -205,8 +231,20 @@ namespace WpfApp2
                     sheet.Cells[CellsHelper.CellIndexToName(filling, j + 1)].PutValue(CompromiseDistances.ElementAt(i).distance_sum.ElementAt(k));
                 }
 
-                sheet.Cells[CellsHelper.CellIndexToName(filling, j + 2)].PutValue(CompromiseDistances.ElementAt(i).sum);
-                sheet.Cells[CellsHelper.CellIndexToName(filling, j + 3)].PutValue(CompromiseDistances.ElementAt(i).max);
+                switch (Median)
+                {
+                    case Median.CookSayford:
+                    case Median.KemenySnell:
+                        sheet.Cells[CellsHelper.CellIndexToName(filling, j + 2)].PutValue(CompromiseDistances.ElementAt(i).sum);
+                        sheet.Cells[CellsHelper.CellIndexToName(filling, j + 3)].PutValue(CompromiseDistances.ElementAt(i).max);
+                        break;
+                    case Median.GV:
+                    case Median.VG:
+                        sheet.Cells[CellsHelper.CellIndexToName(filling, j + 2)].PutValue(CompromiseDistances.ElementAt(i).max);
+                        break;
+                }
+
+
             }
 
             workbook.Save(workbook_path, SaveFormat.Xlsx);
@@ -249,11 +287,13 @@ namespace WpfApp2
 
         #endregion
 
+        #region methods
+
         protected abstract void Distance();
 
         protected abstract List<CompromiseRow> CalculateAllDistances();
 
-        protected void FindCompromiseRows()
+        protected void FindPermutations()
         {
             if (Permutation.permutations == null)
             {
@@ -283,33 +323,6 @@ namespace WpfApp2
                 }
             }
             return num1 * num2;
-        }
-
-
-        public List<CompromiseRow> MinMax()
-        {
-            FindCompromiseRows();
-            List<CompromiseRow> temp = new List<CompromiseRow>();
-
-            min = all_distances.Min(x => x.sum);
-            foreach (CompromiseRow c in all_distances)
-            {
-                if (c.sum == min)
-                {
-                    temp.Add(c);
-                }
-            }
-            max = temp.Max(x => x.max);
-
-            foreach (CompromiseRow c in temp)
-            {
-                if (c.max == max)
-                {
-                    compromise_distances.Add(c);
-                }
-            }
-
-            return compromise_distances;
         }
 
         public Dictionary<int, double> ExpertCompetence()
@@ -380,6 +393,8 @@ namespace WpfApp2
 
             return competence;
         }
+
+        #endregion
 
     }
 }

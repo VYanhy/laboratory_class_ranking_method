@@ -182,13 +182,15 @@ namespace WpfApp2
                 CookMetric.SaveAllDistancesToWorkbook(file_path);
             }
             else
-            if ((bool)cook_compromise_min_max.IsChecked)
+            if ((bool)cook_sayford_median.IsChecked)
             {
-                CookMetric.SaveCompromisesToWorkbook(file_path);
+                CookMetric.Median = Median.CookSayford;
+                CookMetric.SaveCompromisesToWorkbookWithSumsByExpert(file_path);
             }
             else
-            if ((bool)cook_compromise_min_max_with_sums.IsChecked)
+            if ((bool)gv_median.IsChecked)
             {
+                CookMetric.Median = Median.GV;
                 CookMetric.SaveCompromisesToWorkbookWithSumsByExpert(file_path);
             }
             else
@@ -202,24 +204,42 @@ namespace WpfApp2
                 HammingMetric.SaveAllDistancesToWorkbook(file_path);
             }
             else
-            if ((bool)hamming_compromise_min_max.IsChecked)
+            if ((bool)kemeny_snell_median.IsChecked)
             {
-                HammingMetric.SaveCompromisesToWorkbook(file_path);
-            }
-            else
-            if ((bool)hamming_compromise_min_max_with_sums.IsChecked)
-            {
+                HammingMetric.Median = Median.KemenySnell;
                 HammingMetric.SaveCompromisesToWorkbookWithSumsByExpert(file_path);
             }
             else
-            if ((bool)competence_cook.IsChecked)
+            if ((bool)vg_median.IsChecked)
             {
+                HammingMetric.Median = Median.VG;
+                HammingMetric.SaveCompromisesToWorkbookWithSumsByExpert(file_path);
+            }
+            else
+            if ((bool)competence_cook_sayford.IsChecked)
+            {
+                CookMetric.Median = Median.CookSayford;
                 CookMetric.ExpertCompetence();
                 CookMetric.SaveCompetenceToWorkbook(file_path);
             }
             else
-            if ((bool)competence_hamming.IsChecked)
+            if ((bool)competence_gv.IsChecked)
             {
+                CookMetric.Median = Median.GV;
+                CookMetric.ExpertCompetence();
+                CookMetric.SaveCompetenceToWorkbook(file_path);
+            }
+            else
+            if ((bool)competence_kemeny_snell.IsChecked)
+            {
+                HammingMetric.Median = Median.KemenySnell;
+                HammingMetric.ExpertCompetence();
+                HammingMetric.SaveCompetenceToWorkbook(file_path);
+            }
+            else
+            if ((bool)competence_vg.IsChecked)
+            {
+                HammingMetric.Median = Median.VG;
                 HammingMetric.ExpertCompetence();
                 HammingMetric.SaveCompetenceToWorkbook(file_path);
             }
@@ -275,15 +295,33 @@ namespace WpfApp2
 
         private void button_read_action_Click(object sender, RoutedEventArgs e)
         {
-            if ((bool)competence_cook_read.IsChecked)
+            CookMetric.Median = Median.VG;
+
+
+            if ((bool)competence_cook_sayford_read.IsChecked)
             {
+                CookMetric.Median = Median.CookSayford;
                 CookMetric.ReadInitialMatrixAndCompromisesFromWorkbook(file_path_read.Text);
             }
-            else 
-            if ((bool)competence_hamming_read.IsChecked)
+            else
+            if ((bool)competence_gv_read.IsChecked)
             {
-                HammingMetric.ReadInitialMatrixAndCompromisesFromWorkbook(file_path_read.Text);
+                CookMetric.Median = Median.GV;
+                CookMetric.ReadInitialMatrixAndCompromisesFromWorkbook(file_path_read.Text);
             }
+            else
+            if ((bool)competence_kemeny_snell_read.IsChecked)
+            {
+                CookMetric.Median = Median.KemenySnell;
+                CookMetric.ReadInitialMatrixAndCompromisesFromWorkbook(file_path_read.Text);
+            }
+            else
+            if ((bool)competence_vg_read.IsChecked)
+            {
+                CookMetric.Median = Median.VG;
+                CookMetric.ReadInitialMatrixAndCompromisesFromWorkbook(file_path_read.Text);
+            }
+            
             MessageBox.Show("Компромісні ранжування зчитані");
         }
     }
