@@ -38,7 +38,7 @@
             <RadioButton FontFamily="Times New Roman" FontSize="14" GroupName="action" Name="hamming_distances" Content="Відстані між ранжуваннями за метрикою Хемінга"/>
             <RadioButton FontFamily="Times New Roman" FontSize="14" GroupName="action" Name="hamming_all" Content="Відстані для всіх можливих комбінацій ранжувань за метрикою Хемінга"/>
             <RadioButton FontFamily="Times New Roman" FontSize="14" GroupName="action" Name="kemeny_snell_median" Content="Медіана Кемені-Снела"/>
-            <RadioButton FontFamily="Times New Roman" FontSize="14" GroupName="action" Name="vg_median" Content="ВГ медіана"/>
+            <RadioButton FontFamily="Times New Roman" FontSize="14" GroupName="action" Name="vg_median" Content="ВГ-медіана"/>
             <RadioButton FontFamily="Times New Roman" FontSize="14" GroupName="action" Name="competence_cook_sayford" Content="Компетенції експертів (для медіани Кука-Сейфорда)" IsChecked="True" Margin="0,0,-0.2,0" />
             <RadioButton FontFamily="Times New Roman" FontSize="14" GroupName="action" Name="competence_gv" Content="Компетенції експертів (для медіани ГВ)" />
             <RadioButton FontFamily="Times New Roman" FontSize="14" GroupName="action" Name="competence_kemeny_snell" Content="Компетенції експертів (для медіани Кемені-Снела)" />
@@ -53,10 +53,10 @@
             <Button x:Name="button_write_action" Content="Записати результати в файл" Click="button_write_action_Click" FontFamily="Times New Roman" FontSize="14" />
 
             <TextBlock FontFamily="Times New Roman" FontSize="14" Margin="0,5" Text="Оберіть медіану, що міститься в файлі на зчитування (для визначення компетенцій експертів):" />
-            <RadioButton FontFamily="Times New Roman" FontSize="14" GroupName="action_read" Name="competence_cook_sayford_read" Content="Медіана Кука-Сейфорда та ГВ)" IsChecked="True" />
-            <RadioButton FontFamily="Times New Roman" FontSize="14" GroupName="action_read" Name="competence_gv_read" Content="Медіана ГВ)" />
+            <RadioButton FontFamily="Times New Roman" FontSize="14" GroupName="action_read" Name="competence_cook_sayford_read" Content="Медіана Кука-Сейфорда" IsChecked="True" />
+            <RadioButton FontFamily="Times New Roman" FontSize="14" GroupName="action_read" Name="competence_gv_read" Content="ГВ-медіана" />
             <RadioButton FontFamily="Times New Roman" FontSize="14" GroupName="action_read" Name="competence_kemeny_snell_read" Content="Медіана Кемені-Снела" />
-            <RadioButton FontFamily="Times New Roman" FontSize="14" GroupName="action_read" Name="competence_vg_read" Content="Медіана ВГ)" />
+            <RadioButton FontFamily="Times New Roman" FontSize="14" GroupName="action_read" Name="competence_vg_read" Content="ВГ-медіана" />
             <Grid Margin="0,5,0,5">
                 <TextBlock FontFamily="Times New Roman" FontSize="14" Margin="5,2" Text="Шлях файлу для зчитування" Foreground="Gray" Name="hintOptionallyForReadPath" />
                 <TextBox x:Name="file_path_read" Background="Transparent" VerticalContentAlignment="Center"
